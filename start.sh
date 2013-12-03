@@ -215,11 +215,11 @@ fi
 output "Installing Virtualbox and Vagrant"
 if [[ $OS == 'linux' ]]; then
   apt_key http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc
-  add_apt_list "http://download.virtualbox.org/virtualbox/debian $(distro_name) contrib" virtualbox
+  add_apt_list "deb http://download.virtualbox.org/virtualbox/debian $(distro_name) contrib" virtualbox
   apt_update
   apt_install virtualbox-4.3
   # Vagrant, y u no apt repo?
-  deb_install http://files.vagrantup.com/packages/a40522f5fabccb9ddabad03d836e120ff5d14093/Vagrant-1.3.5.dmg
+  deb_install http://files.vagrantup.com/packages/a40522f5fabccb9ddabad03d836e120ff5d14093/vagrant_1.3.5_x86_64.deb
 elif [[ $OS == 'mac' ]]; then
   cask_install virtualbox
   cask_install vagrant
@@ -255,10 +255,11 @@ fi
 output "Installing Dropbox"
 if [[ $OS == 'linux' ]]; then
   if ! command -v dropbox > /dev/null; then
-  sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E
-  sudo add-apt-repository -y "deb http://linux.dropbox.com/ubuntu $(distro_name) main"
-  apt_update
-  apt_install nautilus-dropbox
+    sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E
+    sudo add-apt-repository -y "deb http://linux.dropbox.com/ubuntu $(distro_name) main"
+    apt_update
+    apt_install nautilus-dropbox
+  fi
 elif [[ $OS == 'mac' ]]; then
   cask_install dropbox
 fi
