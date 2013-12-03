@@ -15,7 +15,7 @@ fi
 
 # Colors
 CLEAR="\033[0m"
-ORANGE="\033[33m"]"
+ORANGE="\033[33m"
 
 # Utility functions
 distro_name() {
@@ -185,6 +185,7 @@ elif [[ $OS == 'mac' ]]; then
   cask_install google-chrome
 fi
 
+# TODO: Add config to bash/zsh scripts
 output "Installing rbenv and plugins"
 git_install https://github.com/sstephenson/rbenv.git ~/.rbenv
 git_install https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
