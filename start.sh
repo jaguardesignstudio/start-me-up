@@ -32,7 +32,7 @@ output() {
 }
 
 version_check() {
-  if lsb_release -c | grep -qEv 'precise|quantal|wheezy|raring'
+  if lsb_release -c | grep -qEv 'precise|quantal|wheezy|raring|saucy'
   then
     output "Sorry! We don't currently support this distro."
     exit;
