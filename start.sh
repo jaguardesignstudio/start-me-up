@@ -107,6 +107,30 @@ apt_key() {
   wget -q -O - $1 | sudo apt-key add - > /dev/null
 }
 
+rbenv_config() {
+  if [[ $OS == 'mac' ]]; then
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+    echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+  elif [[ $OS == 'linux' ]]; then
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+    echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+  fi
+  echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
+  echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+}
+
+pyenv_config() {
+  if [[ $OS == 'mac' ]]; then
+    echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bash_profile
+    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+  elif [[ $OS == 'linux' ]]; then
+    echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
+    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+  fi
+  echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.zshrc
+  echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+}
+
 ################
 # START ME UP! #
 ################
@@ -229,27 +253,13 @@ git_install https://github.com/sstephenson/rbenv-default-gems.git ~/.rbenv/plugi
 git_install https://github.com/rkh/rbenv-update.git ~/.rbenv/plugins/rbenv-update
 if [[ $OS == 'mac' ]]; then
   git_install git://github.com/tpope/rbenv-readline.git ~/.rbenv/plugins/rbenv-readline
-  echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-  echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
-elif [[ $OS == 'linux' ]]; then
-  echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-  echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 fi
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
-echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+ask_prompt "Add rbenv to your bash/zsh config? (Choose yes only if this is a fresh install of rbenv, not an update)", rbenv_config
 
 output "Installing pyenv and plugins"
 git_install git://github.com/yyuu/pyenv.git ~/.pyenv
 git_install git://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
-if [[ $OS == 'mac' ]]; then
-  echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bash_profile
-  echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-elif [[ $OS == 'linux' ]]; then
-  echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
-  echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-fi
-echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.zshrc
-echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+ask_prompt "Add pyenv to your bash/zsh config? (Choose yes only if this is a fresh install of pyenv, not an update)", pyenv_config
 
 output "Installing Virtualbox and Vagrant"
 if [[ $OS == 'linux' ]]; then
