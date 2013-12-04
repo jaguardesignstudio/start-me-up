@@ -46,16 +46,22 @@ binary_check() {
   fi
 }
 
+ask_prompt() {
+  read -p "$1 [y/N]" answer
+  if [[ $answer = y ]] ; then
+    "$@"
+  fi
+}
 apt_install() {
-  result sudo apt-get install -y $1
+  result sudo apt-get install -y "$@"
 }
 
 brew_install() {
-  result brew install $1
+  result brew install "$@"
 }
 
 cask_install() {
-  result brew cask install $1
+  result brew cask install "$@"
 }
 
 deb_install() {
@@ -79,9 +85,9 @@ add_apt() {
 
 install() {
   if [[ $OS == 'linux' ]]; then
-    apt_install $1
+    apt_install "$@"
   elif [[ $OS == 'mac' ]]; then
-    brew_install $1
+    brew_install "$@"
   fi
 }
 
@@ -139,11 +145,32 @@ if [[ $OS == 'linux' ]]; then
   apt_install build-essential bison openssl libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libc6-dev automake cmake
 fi
 
+output "Installing zsh"
+if [[ $OS == 'linux' ]]; then
+  apt_install zsh
+  ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/bin/zsh"
+elif [[ $OS == 'mac' ]]; then
+  brew_install zsh reattach-to-user-namespace
+  sudo mv /etc/zshenv /etc/zprofile
+  echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
+  ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/local/bin/zsh"
+fi
+
 output "Installing version control clients"
 install git subversion
 
 output "Installing tmux"
 install tmux
+
+output "Installing htop"
+if [[ $OS == 'linux' ]]; then
+  apt_install htop
+elif [[ $OS == 'mac' ]]; then
+  brew_install htop-osx
+fi
+
+output "Installing PgAdmin3"
+install pgadmin3
 
 output "Installing vim (latest)"
 if [[ $OS == 'linux' ]]; then
@@ -151,6 +178,15 @@ if [[ $OS == 'linux' ]]; then
   apt_install vim vim-gnome
 elif [[ $OS == 'mac' ]]; then
   brew_install macvim --HEAD --override-system-vim --with-cscope --with-lua
+fi
+
+output "Installing Sublime Text"
+if [[ $OS == 'linux' ]]; then
+  add_apt ppa:webupd8team/sublime-text-2
+  apt_update
+  apt_install sublime-text
+elif [[ $OS == 'mac' ]]; then
+  cask_install sublime-text
 fi
 
 output "Installing ctags"
@@ -185,7 +221,6 @@ elif [[ $OS == 'mac' ]]; then
   cask_install google-chrome
 fi
 
-# TODO: Add config to bash/zsh scripts
 output "Installing rbenv and plugins"
 git_install https://github.com/sstephenson/rbenv.git ~/.rbenv
 git_install https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
@@ -194,23 +229,27 @@ git_install https://github.com/sstephenson/rbenv-default-gems.git ~/.rbenv/plugi
 git_install https://github.com/rkh/rbenv-update.git ~/.rbenv/plugins/rbenv-update
 if [[ $OS == 'mac' ]]; then
   git_install git://github.com/tpope/rbenv-readline.git ~/.rbenv/plugins/rbenv-readline
+  echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+  echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+elif [[ $OS == 'linux' ]]; then
+  echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+  echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 fi
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(rbenv init -)"' >> ~/.zshrc
 
 output "Installing pyenv and plugins"
 git_install git://github.com/yyuu/pyenv.git ~/.pyenv
 git_install git://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
-
-# TODO: Remove automatic changing of user's shell, add a prompt for a choice between bash and zsh
-output "Installing zsh"
-if [[ $OS == 'linux' ]]; then
-  apt_install zsh
-  chsh -s /usr/bin/zsh
-elif [[ $OS == 'mac' ]]; then
-  brew_install zsh reattach-to-user-namespace
-  sudo mv /etc/zshenv /etc/zprofile
-  echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
-  chsh -s /usr/local/bin/zsh
+if [[ $OS == 'mac' ]]; then
+  echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bash_profile
+  echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+elif [[ $OS == 'linux' ]]; then
+  echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
+  echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 fi
+echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 
 output "Installing Virtualbox and Vagrant"
 if [[ $OS == 'linux' ]]; then
@@ -255,13 +294,15 @@ fi
 output "Installing Dropbox"
 if [[ $OS == 'linux' ]]; then
   if ! command -v dropbox > /dev/null; then
-    sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E
-    sudo add-apt-repository -y "deb http://linux.dropbox.com/ubuntu $(distro_name) main"
-    apt_update
-    apt_install nautilus-dropbox
+    deb_install https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_1.6.0_amd64.deb
   fi
 elif [[ $OS == 'mac' ]]; then
   cask_install dropbox
 fi
 
-# vim: ft=bash
+if [[ $OS == 'mac' ]]; then
+  output "Installing Harvest time tracking widget"
+  cask_install harvest
+fi
+
+# vim: set ft=bash
