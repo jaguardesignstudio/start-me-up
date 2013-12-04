@@ -8,13 +8,13 @@ More than a little bit inspired by Thoughtbot's [Laptop](https://github.com/thou
 
 ## Notes
 
-This script works with Mac OS X 10.9+ and Ubuntu 12.04+
+This script works with Mac OS X 10.9+ and Ubuntu 12.04+ x64
 
 ## Instructions
 
 Run the following command from the command line:
 
-    bash <(curl -s https://raw.github.com/jaguardesign/start-me-up/master/start.sh)>
+    bash <(curl -s https://raw.github.com/jaguardesign/start-me-up/master/start.sh)
 
 ## What It Installs
 
@@ -22,6 +22,7 @@ Run the following command from the command line:
 - (Mac) Homebrew
 - (Mac) Homebrew Casks (Homebrew addon for GUI apps)
 - (Linux) Base development packages
+- zsh
 - Git, Subversion
 - tmux
 - vim (latest builds)
@@ -31,10 +32,13 @@ Run the following command from the command line:
 - Chrome
 - rbenv (Ruby version management)
 - pyenv (Python version management)
-- zsh
 - Virtualbox
 - Vagrant
 - (Linux) Fonts not included in base Ubuntu install
 - rcm (dotfiles management)
 - HipChat
 - Dropbox
+
+## It Installs More Than I Want!
+
+It's a tiny bit of disk space. Stop whining.
