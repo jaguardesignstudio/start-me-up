@@ -157,18 +157,24 @@ if [[ $OS == 'mac' ]]; then
 fi
 
 if [[ $OS == 'mac' ]]; then
-  output "Installing Homebrew"
+  output "Mac: Installing Homebrew"
   ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
   output "Installing Casks, Homebrew addon for GUI apps"
   brew tap phinze/homebrew-cask
   brew_install brew-cask
+  export HOMEBREW_CASK_OPTS="--appdir=/Applications"
   echo 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' >> ~/.bashrc
   echo 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' >> ~/.zshrc
+  brew install curl-ca-bundle
+  echo 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' >> ~/.bashrc
+  echo 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' >> ~/.zshrc
 fi
 
+output "Installing development packages"
 if [[ $OS == 'linux' ]]; then
-  output "Linux: Installing development packages"
-  apt_install build-essential bison openssl libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libc6-dev automake cmake
+  apt_install build-essential bison openssl libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libc6-dev automake cmake libc6-dev libmysql++-dev libsqlite3-dev make
+elif [[ $OS == 'mac' ]]; then
+  brew_install gdbm libffi libksba libyaml
 fi
 
 output "Installing zsh"
@@ -206,6 +212,7 @@ elif [[ $OS == 'mac' ]]; then
   brew_install macvim --HEAD --override-system-vim --with-cscope --with-lua
 fi
 
+# TODO: Add option for Sublime Text 3
 output "Installing Sublime Text"
 if [[ $OS == 'linux' ]]; then
   add_apt ppa:webupd8team/sublime-text-2
@@ -270,11 +277,14 @@ if [[ $OS == 'linux' ]]; then
   apt_update
   apt_install virtualbox-4.3
   # Vagrant, y u no apt repo?
-  deb_install http://files.vagrantup.com/packages/a40522f5fabccb9ddabad03d836e120ff5d14093/vagrant_1.3.5_x86_64.deb
+  deb_install https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.0_x86_64.deb
 elif [[ $OS == 'mac' ]]; then
   cask_install virtualbox
   cask_install vagrant
 fi
+vagrant plugin install vagrant-digitalocean
+vagrant plugin install vagrant-vbox-snapshot
+vagrant plugin install dotenv
 
 output "Installing rcm"
 if [[ $OS == 'linux' ]]; then
@@ -316,5 +326,11 @@ if [[ $OS == 'mac' ]]; then
   output "Installing Harvest time tracking widget"
   cask_install harvest
 fi
+
+output ".gitconfig setup"
+read -p "Enter your first and last name and press Enter: " git_name
+git config --global user.name "$git_name"
+read -p "Enter your Jaguar email address and press Enter: " git_email
+git config --global user.email $git_email
 
 # vim: set ft=bash
