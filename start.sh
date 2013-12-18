@@ -284,6 +284,7 @@ elif [[ $OS == 'mac' ]]; then
 fi
 vagrant plugin install vagrant-digitalocean
 vagrant plugin install vagrant-vbox-snapshot
+vagrant plugin install vagrant-vbguest
 vagrant plugin install dotenv
 
 output "Installing rcm"
