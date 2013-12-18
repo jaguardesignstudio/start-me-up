@@ -117,6 +117,22 @@ rbenv_config() {
   fi
   echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
   echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+  # Default gems
+  echo 'bundler' > ~/.rbenv/default-gems
+  echo 'gem-ctags' >> ~/.rbenv/default-gems
+  echo 'gem-browse' >> ~/.rbenv/default-gems
+  echo 'git-up' >> ~/.rbenv/default-gems
+  echo 'foreman' >> ~/.rbenv/default-gems
+  echo 'rubocop' >> ~/.rbenv/default-gems
+  echo 'pry' >> ~/.rbenv/default-gems
+  echo 'pry-remote' >> ~/.rbenv/default-gems
+  echo 'pry-coolline' >> ~/.rbenv/default-gems
+  echo 'awesome_print' >> ~/.rbenv/default-gems
+  echo 'coderay' >> ~/.rbenv/default-gems
+  if [[ $OS == 'mac' ]]; then
+    echo 'cocoapods' >> ~/.rbenv/default-gems
+    echo 'lunchy' >> ~/.rbenv/default-gems
+  fi
 }
 
 pyenv_config() {
