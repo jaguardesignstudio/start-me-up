@@ -52,6 +52,13 @@ ask_prompt() {
     "$@"
   fi
 }
+
+append_if_missing() {
+  if ! grep -Fxq "$1" "$2"; then
+    echo "$1" >> "$2"
+  fi
+}
+
 apt_install() {
   result sudo apt-get install -y "$@"
 }
@@ -109,14 +116,14 @@ apt_key() {
 
 rbenv_config() {
   if [[ $OS == 'mac' ]]; then
-    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-    echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+    append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.bash_profile
+    append_if_missing 'eval "$(rbenv init -)"' ~/.bash_profile
   elif [[ $OS == 'linux' ]]; then
-    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-    echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+    append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.bashrc
+    append_if_missing 'eval "$(rbenv init -)"' ~/.bashrc
   fi
-  echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
-  echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+  append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.zshrc
+  append_if_missing 'eval "$(rbenv init -)"' ~/.zshrc
   # Default gems
   echo 'bundler' > ~/.rbenv/default-gems
   echo 'gem-ctags' >> ~/.rbenv/default-gems
@@ -137,14 +144,14 @@ rbenv_config() {
 
 pyenv_config() {
   if [[ $OS == 'mac' ]]; then
-    echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bash_profile
-    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+    append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.bash_profile
+    append_if_missing 'eval "$(pyenv init -)"' ~/.bash_profile
   elif [[ $OS == 'linux' ]]; then
-    echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
-    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+    append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.bashrc
+    append_if_missing 'eval "$(pyenv init -)"' ~/.bashrc
   fi
-  echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.zshrc
-  echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+  append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.zshrc
+  append_if_missing 'eval "$(pyenv init -)"' ~/.zshrc
 }
 
 ################
@@ -174,16 +181,16 @@ fi
 
 if [[ $OS == 'mac' ]]; then
   output "Mac: Installing Homebrew"
-  ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
   output "Installing Casks, Homebrew addon for GUI apps"
   brew tap phinze/homebrew-cask
   brew_install brew-cask
   export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-  echo 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' >> ~/.bashrc
-  echo 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' >> ~/.zshrc
+  append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.bashrc
+  append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.zshrc
   brew install curl-ca-bundle
-  echo 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' >> ~/.bashrc
-  echo 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' >> ~/.zshrc
+  append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
+  append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
 fi
 
 output "Installing development packages"
@@ -199,8 +206,12 @@ if [[ $OS == 'linux' ]]; then
   ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/bin/zsh"
 elif [[ $OS == 'mac' ]]; then
   brew_install zsh reattach-to-user-namespace
-  sudo mv /etc/zshenv /etc/zprofile
-  echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
+  if test -f /etc/zshenv; then
+    sudo mv /etc/zshenv /etc/zprofile
+  fi
+  if ! grep -Fxq /usr/local/bin/zsh /etc/shells; then
+    echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
+  fi
   ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/local/bin/zsh"
 fi
 
@@ -218,7 +229,11 @@ elif [[ $OS == 'mac' ]]; then
 fi
 
 output "Installing PgAdmin3"
-install pgadmin3
+if [[ $OS == 'linux' ]]; then
+  apt_install pgadmin3
+elif [[ $OS == 'mac' ]]; then
+  cask_install pgadmin3
+fi
 
 output "Installing vim (latest)"
 if [[ $OS == 'linux' ]]; then
@@ -269,6 +284,9 @@ if [[ $OS == 'linux' ]]; then
 elif [[ $OS == 'mac' ]]; then
   cask_install google-chrome
 fi
+
+output "Installing Firefox"
+install firefox
 
 output "Installing rbenv and plugins"
 git_install https://github.com/sstephenson/rbenv.git ~/.rbenv
@@ -345,7 +363,7 @@ if [[ $OS == 'mac' ]]; then
 fi
 
 output ".gitconfig setup"
-read -p "Enter your first and last name and press Enter: " git_name
+read -p "Enter your full name (first and last name) and press Enter: " git_name
 git config --global user.name "$git_name"
 read -p "Enter your Jaguar email address and press Enter: " git_email
 git config --global user.email $git_email
