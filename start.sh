@@ -297,8 +297,27 @@ elif [[ $OS == 'mac' ]]; then
   cask_install google-chrome
 fi
 
+if [[ $OS == 'linux' ]]; then
+  output "Installing Chromium (Dev channel)"
+  add_apt ppa:saiarcot895/chromium-dev
+  apt_update
+  apt_install chromium-browser
+elif [[ $OS == 'mac' ]]; then
+  output "Installing Google Chrome Canary"
+  cask_install google-chrome-canary
+fi
+
 output "Installing Firefox"
 install firefox
+
+output "Install Firefox Nightly"
+if [[ $OS == 'linux' ]]; then
+  add_apt ppa:ubuntu-mozilla-daily/ppa
+  apt_update
+  apt_install firefox-trunk
+elif [[ $OS == 'mac' ]]; then
+  cask_install firefox-nightly
+fi
 
 output "Installing rbenv and plugins"
 git_install https://github.com/sstephenson/rbenv.git ~/.rbenv
@@ -323,7 +342,7 @@ if [[ $OS == 'linux' ]]; then
   apt_update
   apt_install virtualbox-4.3
   # Vagrant, y u no apt repo?
-  deb_install https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.0_x86_64.deb
+  deb_install https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb
 elif [[ $OS == 'mac' ]]; then
   cask_install virtualbox
   cask_install vagrant
@@ -370,8 +389,32 @@ elif [[ $OS == 'mac' ]]; then
 fi
 
 if [[ $OS == 'mac' ]]; then
+  output "Installing Google Drive"
+  cask_install google-drive
+fi
+
+if [[ $OS == 'mac' ]]; then
   output "Installing Harvest time tracking widget"
   cask_install harvest
+fi
+
+output "Installing Skype"
+if [[ $OS == 'linux' ]]; then
+  add_apt_list "deb http://archive.canonical.com/ $(distro_name) partner"
+  apt_update
+  apt_install skype
+elif [[ $OS == 'mac' ]]; then
+  cask_install skype
+fi
+
+if [[ $OS == 'mac' ]]; then
+  output "Installing Screenhero"
+  cask_install screenhero
+fi
+
+if [[ $OS == 'mac' ]]; then
+  output "Installing Mou markdown editor"
+  cask_install mou
 fi
 
 output "Installing IE virtual machines (ievms) and control tool (iectrl)"
