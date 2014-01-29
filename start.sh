@@ -189,6 +189,7 @@ if [[ $OS == 'mac' ]]; then
   output "Installing Casks, Homebrew addon for GUI apps"
   brew tap phinze/homebrew-cask
   brew_install brew-cask
+  brew tap caskroom/versions
   export HOMEBREW_CASK_OPTS="--appdir=/Applications"
   append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.bashrc
   append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.zshrc
