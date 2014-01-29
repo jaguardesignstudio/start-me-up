@@ -158,6 +158,10 @@ pyenv_config() {
 # START ME UP! #
 ################
 
+output ""
+output "START ME UP"
+output ""
+
 # If Linux, make sure this is a Ubuntu or Debian we know
 if [[ $OS == 'linux' ]]; then
   version_check
