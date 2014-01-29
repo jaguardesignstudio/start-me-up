@@ -218,6 +218,13 @@ fi
 output "Installing version control clients"
 install git subversion
 
+output "Installing node.js"
+if [[ $OS == 'linux' ]]; then
+  apt_install nodejs
+elif [[ $OS == 'mac' ]]; then
+  brew_install node
+fi
+
 output "Installing tmux"
 install tmux
 
@@ -361,6 +368,10 @@ if [[ $OS == 'mac' ]]; then
   output "Installing Harvest time tracking widget"
   cask_install harvest
 fi
+
+output "Installing IE virtual machines (ievms) and control tool (iectrl)"
+curl -s https://raw.github.com/xdissent/ievms/master/ievms.sh | bash
+sudo npm install -g iectrl
 
 output ".gitconfig setup"
 read -p "Enter your full name (first and last name) and press Enter: " git_name
