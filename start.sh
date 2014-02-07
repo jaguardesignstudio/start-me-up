@@ -131,6 +131,7 @@ rbenv_config() {
   echo 'git-up' >> ~/.rbenv/default-gems
   echo 'foreman' >> ~/.rbenv/default-gems
   echo 'rubocop' >> ~/.rbenv/default-gems
+  echo 'paint' >> ~/.rbenv/default-gems
   echo 'pry' >> ~/.rbenv/default-gems
   echo 'pry-remote' >> ~/.rbenv/default-gems
   echo 'pry-coolline' >> ~/.rbenv/default-gems
@@ -416,6 +417,9 @@ if [[ $OS == 'mac' ]]; then
   output "Installing Mou markdown editor"
   cask_install mou
 fi
+
+output "Installing JSHint"
+sudo npm install -g jshint
 
 output "Installing IE virtual machines (ievms) and control tool (iectrl)"
 curl -s https://raw.github.com/xdissent/ievms/master/ievms.sh | bash
