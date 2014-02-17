@@ -46,9 +46,22 @@ binary_check() {
   fi
 }
 
+ask_block() {
+  if [[ $auto_confirm =~ [Yy] ]] ; then
+    true
+  else
+    read -p "$1 [y/N] " answer
+    if [[ $answer =~ [Yy] ]] ; then
+      true
+    else
+      false
+    fi
+  fi
+}
+
 ask_prompt() {
-  read -p "$1 [y/N]" answer
-  if [[ $answer = y ]] ; then
+  read -p "$1 [y/N] " answer
+  if [[ $answer =~ [Yy] ]] ; then
     "$@"
   fi
 }
@@ -163,6 +176,12 @@ output ""
 output "START ME UP"
 output ""
 
+output "Do you wish to run the entire script automatically?"
+output "(If 'Y', entire script will install without ask prompts)"
+output "(Choose 'Y' for fresh installs, 'N' if running on a non-fresh system)"
+read -p "[y/N] " auto_confirm
+# TODO: guard against invalid values
+
 # If Linux, make sure this is a Ubuntu or Debian we know
 if [[ $OS == 'linux' ]]; then
   version_check
@@ -174,261 +193,345 @@ if [[ $OS == 'linux' ]]; then
 fi
 
 if [[ $OS == 'linux' ]]; then
+  ask_block "Enable universe/multiverse repos?" && (
+    output "Enabling universe/multiverse repos"
+    add_apt_list "deb http://us.archive.ubuntu.com/ubuntu/ $(distro_name) universe multiverse" universe
+    add_apt_list "deb http://us.archive.ubuntu.com/ubuntu/ $(distro_name)-updates universe multiverse" universe
+  )
+fi
+
+if [[ $OS == 'linux' ]]; then
   output "Linux: Updating package cache, upgrading installed packages"
   apt_update
   apt_upgrade
 fi
 
 if [[ $OS == 'mac' ]]; then
-  output "Mac: installing Xcode"
-  bash <(curl -s https://raw.github.com/timsutton/osx-vm-templates/master/scripts/xcode-cli-tools.sh)
+  ask_block "Install Xcode?" && (
+    output "Mac: installing Xcode"
+    bash <(curl -s https://raw.github.com/timsutton/osx-vm-templates/master/scripts/xcode-cli-tools.sh)
+  )
 fi
 
 if [[ $OS == 'mac' ]]; then
-  output "Mac: Installing Homebrew"
-  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
-  output "Installing Casks, Homebrew addon for GUI apps"
-  brew tap phinze/homebrew-cask
-  brew_install brew-cask
-  brew tap caskroom/versions
-  export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-  append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.bashrc
-  append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.zshrc
-  brew install curl-ca-bundle
-  append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
-  append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
+  ask_block "Install Homebrew?" && (
+    output "Mac: Installing Homebrew"
+    ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+    output "Installing Casks, Homebrew addon for GUI apps"
+    brew tap phinze/homebrew-cask
+    brew_install brew-cask
+    brew tap caskroom/versions
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.bashrc
+    append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.zshrc
+    brew install curl-ca-bundle
+    append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
+    append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
+  )
 fi
 
-output "Installing development packages"
-if [[ $OS == 'linux' ]]; then
-  apt_install build-essential bison openssl libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libc6-dev automake cmake libc6-dev libmysql++-dev libsqlite3-dev make
-elif [[ $OS == 'mac' ]]; then
-  brew_install gdbm libffi libksba libyaml
-fi
 
-output "Installing zsh"
-if [[ $OS == 'linux' ]]; then
-  apt_install zsh
-  ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/bin/zsh"
-elif [[ $OS == 'mac' ]]; then
-  brew_install zsh reattach-to-user-namespace
-  if test -f /etc/zshenv; then
-    sudo mv /etc/zshenv /etc/zprofile
+ask_block "Install development packages?" && (
+  output "Installing development packages"
+  if [[ $OS == 'linux' ]]; then
+    apt_install build-essential bison openssl libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libc6-dev automake cmake libc6-dev libmysql++-dev libsqlite3-dev make phantomjs
+  elif [[ $OS == 'mac' ]]; then
+    brew_install gdbm libffi libksba libyaml phantomjs qt
   fi
-  if ! grep -Fxq /usr/local/bin/zsh /etc/shells; then
-    echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
+)
+
+ask_block "Install zsh?" && (
+  output "Installing zsh"
+  if [[ $OS == 'linux' ]]; then
+    apt_install zsh
+    ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/bin/zsh"
+  elif [[ $OS == 'mac' ]]; then
+    brew_install zsh reattach-to-user-namespace
+    if test -f /etc/zshenv; then
+      sudo mv /etc/zshenv /etc/zprofile
+    fi
+    if ! grep -Fxq /usr/local/bin/zsh /etc/shells; then
+      echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
+    fi
+    ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/local/bin/zsh"
   fi
-  ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/local/bin/zsh"
-fi
+)
 
-output "Installing version control clients"
-install git subversion
+ask_block "Install version control systems?" && (
+  output "Installing version control clients"
+  install git subversion
+)
 
-output "Installing node.js"
-if [[ $OS == 'linux' ]]; then
-  apt_install nodejs
-elif [[ $OS == 'mac' ]]; then
-  brew_install node
-fi
+ask_block "Install node.js? (Used for JSHint and IE VMs controller)" && (
+  output "Installing node.js"
+  if [[ $OS == 'linux' ]]; then
+    apt_install nodejs
+  elif [[ $OS == 'mac' ]]; then
+    brew_install node
+  fi
+)
 
-output "Installing tmux"
-install tmux
+ask_block "Install tmux?" && (
+  output "Installing tmux"
+  install tmux
+)
 
-output "Installing htop"
-if [[ $OS == 'linux' ]]; then
-  apt_install htop
-elif [[ $OS == 'mac' ]]; then
-  brew_install htop-osx
-fi
+ask_block "Install htop? (better 'top' command)" && (
+  output "Installing htop"
+  if [[ $OS == 'linux' ]]; then
+    apt_install htop
+  elif [[ $OS == 'mac' ]]; then
+    brew_install htop-osx
+  fi
+)
 
-output "Installing PgAdmin3"
-if [[ $OS == 'linux' ]]; then
-  apt_install pgadmin3
-elif [[ $OS == 'mac' ]]; then
-  cask_install pgadmin3
-fi
+ask_block "Install PgAdmin3? (PostgreSQL GUI client)" && (
+  output "Installing PgAdmin3"
+  if [[ $OS == 'linux' ]]; then
+    apt_install pgadmin3
+  elif [[ $OS == 'mac' ]]; then
+    cask_install pgadmin3
+  fi
+)
 
-output "Installing vim (latest)"
-if [[ $OS == 'linux' ]]; then
-  add_apt ppa:dgadomski/vim-daily
-  apt_install vim vim-gnome
-elif [[ $OS == 'mac' ]]; then
-  brew_install macvim --HEAD --override-system-vim --with-cscope --with-lua
-fi
+ask_block "Install latest Vim build? (Best text editor evar!)" && (
+  output "Installing vim (latest)"
+  if [[ $OS == 'linux' ]]; then
+    add_apt ppa:dgadomski/vim-daily
+    apt_install vim vim-gnome
+  elif [[ $OS == 'mac' ]]; then
+    brew_install macvim --HEAD --override-system-vim --with-cscope --with-lua
+  fi
+)
 
 # TODO: Add option for Sublime Text 3
-output "Installing Sublime Text"
-if [[ $OS == 'linux' ]]; then
-  add_apt ppa:webupd8team/sublime-text-2
-  apt_update
-  apt_install sublime-text
-elif [[ $OS == 'mac' ]]; then
-  cask_install sublime-text
-fi
-
-output "Installing ctags"
-if [[ $OS == 'linux' ]]; then
-  apt_install exuberant-ctags
-elif [[ $OS == 'mac' ]]; then
-  brew_install ctags
-fi
-
-output "Installing ack and ag (The Silver Searcher)"
-if [[ $OS == 'linux' ]]; then
-  apt_install ack-grep silversearcher-ag
-elif [[ $OS == 'mac' ]]; then
-  brew_install ack the_silver_searcher
-fi
-
-if [[ $OS == 'linux' ]]; then
-  output "Installing Synapse"
-  apt_install synapse
-elif [[ $OS == 'mac' ]]; then
-  output "Installing Alfred"
-  cask_install alfred
-fi
-
-output "Installing Google Chrome"
-if [[ $OS == 'linux' ]]; then
-  apt_key https://dl-ssl.google.com/linux/linux_signing_key.pub
-  add_apt_list "deb http://dl.google.com/linux/chrome/deb/ stable main" google-chrome
-  apt_update
-  apt_install google-chrome-stable
-elif [[ $OS == 'mac' ]]; then
-  cask_install google-chrome
-fi
-
-if [[ $OS == 'linux' ]]; then
-  output "Installing Chromium (Dev channel)"
-  add_apt ppa:saiarcot895/chromium-dev
-  apt_update
-  apt_install chromium-browser
-elif [[ $OS == 'mac' ]]; then
-  output "Installing Google Chrome Canary"
-  cask_install google-chrome-canary
-fi
-
-output "Installing Firefox"
-install firefox
-
-output "Install Firefox Nightly"
-if [[ $OS == 'linux' ]]; then
-  add_apt ppa:ubuntu-mozilla-daily/ppa
-  apt_update
-  apt_install firefox-trunk
-elif [[ $OS == 'mac' ]]; then
-  cask_install firefox-nightly
-fi
-
-output "Installing rbenv and plugins"
-git_install https://github.com/sstephenson/rbenv.git ~/.rbenv
-git_install https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-git_install git://github.com/tpope/rbenv-ctags.git ~/.rbenv/plugins/rbenv-ctags
-git_install https://github.com/sstephenson/rbenv-default-gems.git ~/.rbenv/plugins/rbenv-default-gems
-git_install https://github.com/rkh/rbenv-update.git ~/.rbenv/plugins/rbenv-update
-if [[ $OS == 'mac' ]]; then
-  git_install git://github.com/tpope/rbenv-readline.git ~/.rbenv/plugins/rbenv-readline
-fi
-ask_prompt "Add rbenv to your bash/zsh config? (Choose yes only if this is a fresh install of rbenv, not an update)", rbenv_config
-
-output "Installing pyenv and plugins"
-git_install git://github.com/yyuu/pyenv.git ~/.pyenv
-git_install git://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
-ask_prompt "Add pyenv to your bash/zsh config? (Choose yes only if this is a fresh install of pyenv, not an update)", pyenv_config
-
-output "Installing Virtualbox and Vagrant"
-if [[ $OS == 'linux' ]]; then
-  apt_key http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc
-  add_apt_list "deb http://download.virtualbox.org/virtualbox/debian $(distro_name) contrib" virtualbox
-  apt_update
-  apt_install virtualbox-4.3
-  # Vagrant, y u no apt repo?
-  deb_install https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb
-elif [[ $OS == 'mac' ]]; then
-  cask_install virtualbox
-  cask_install vagrant
-fi
-vagrant plugin install vagrant-digitalocean
-vagrant plugin install vagrant-vbox-snapshot
-vagrant plugin install vagrant-vbguest
-vagrant plugin install dotenv
-
-output "Installing rcm"
-if [[ $OS == 'linux' ]]; then
-  deb_install http://mike-burns.com/project/rcm/rcm_1.1.0_all.deb
-elif [[ $OS == 'mac' ]]; then
-  brew tap mike-burns/rcm
-  brew_install rcm
-fi
-
-if [[ $OS == 'linux' ]]; then
-  output "Linux: Font packages"
-  apt_install ttf-mscorefonts-installer fonts-inconsolata fonts-opensymbol mathematica-fonts
-  output "Linux: Installing Typecatcher for access to Google Webfonts"
-  add_apt ppa:andrewsomething/typecatcher
-  apt_update
-  apt_install typecatcher
-fi
-
-output "Installing HipChat"
-if [[ $OS == 'linux' ]]; then
-  apt_key https://www.hipchat.com/keys/hipchat-linux.key
-  add_apt_list "deb http://downloads.hipchat.com/linux/apt stable main" atlassian-hipchat
-  apt_update
-  apt_install hipchat
-elif [[ $OS == 'mac' ]]; then
-  cask_install hipchat
-fi
-
-output "Installing Dropbox"
-if [[ $OS == 'linux' ]]; then
-  if ! command -v dropbox > /dev/null; then
-    deb_install https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_1.6.0_amd64.deb
+ask_block "Install Sublime Text 2?" && (
+  output "Installing Sublime Text"
+  if [[ $OS == 'linux' ]]; then
+    add_apt ppa:webupd8team/sublime-text-2
+    apt_update
+    apt_install sublime-text
+  elif [[ $OS == 'mac' ]]; then
+    cask_install sublime-text
   fi
-elif [[ $OS == 'mac' ]]; then
-  cask_install dropbox
-fi
+)
 
-if [[ $OS == 'mac' ]]; then
-  output "Installing Google Drive"
-  cask_install google-drive
-fi
+ask_block "Install ctags?" && (
+  output "Installing ctags"
+  if [[ $OS == 'linux' ]]; then
+    apt_install exuberant-ctags
+  elif [[ $OS == 'mac' ]]; then
+    brew_install ctags
+  fi
+)
 
-if [[ $OS == 'mac' ]]; then
-  output "Installing Harvest time tracking widget"
-  cask_install harvest
-fi
+ask_block "Install ag? (grep-like code searching)" && (
+  output "Installing ag (aka The Silver Searcher)"
+  if [[ $OS == 'linux' ]]; then
+    apt_install silversearcher-ag
+  elif [[ $OS == 'mac' ]]; then
+    brew_install the_silver_searcher
+  fi
+)
 
-output "Installing Skype"
+ask_block "Install keyboard-based launcher? (Synapse in Linux, Alfred in OS X)" && (
+  if [[ $OS == 'linux' ]]; then
+    output "Installing Synapse"
+    apt_install synapse
+  elif [[ $OS == 'mac' ]]; then
+    output "Installing Alfred"
+    cask_install alfred
+  fi
+)
+
+ask_block "Install Google Chrome?" && (
+  output "Installing Google Chrome"
+  if [[ $OS == 'linux' ]]; then
+    apt_key https://dl-ssl.google.com/linux/linux_signing_key.pub
+    add_apt_list "deb http://dl.google.com/linux/chrome/deb/ stable main" google-chrome
+    apt_update
+    apt_install google-chrome-stable
+  elif [[ $OS == 'mac' ]]; then
+    cask_install google-chrome
+  fi
+)
+
+ask_block "Install pre-release Chrome for testing?" && (
+  if [[ $OS == 'linux' ]]; then
+    output "Installing Chromium (Dev channel)"
+    add_apt ppa:saiarcot895/chromium-dev
+    apt_update
+    apt_install chromium-browser
+  elif [[ $OS == 'mac' ]]; then
+    output "Installing Google Chrome Canary"
+    cask_install google-chrome-canary
+  fi
+)
+
+ask_block "Install Firefox?" && (
+  output "Installing Firefox"
+  if [[ $OS == 'linux' ]]; then
+    apt_install firefox
+  elif [[ $OS == 'mac' ]]; then
+    cask_install firefox
+  fi
+)
+
+ask_block "Install pre-release Firefox for testing?" && (
+  if [[ $OS == 'linux' ]]; then
+    output "Install Firefox Nightly"
+    add_apt ppa:ubuntu-mozilla-daily/ppa
+    apt_update
+    apt_install firefox-trunk
+  elif [[ $OS == 'mac' ]]; then
+    output "Install Firefox Aurora"
+    cask_install firefox-aurora
+  fi
+)
+
+ask_block "Install rbenv? (Ruby version manager)" && (
+  output "Installing rbenv and plugins"
+  git_install https://github.com/sstephenson/rbenv.git ~/.rbenv
+  git_install https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+  git_install git://github.com/tpope/rbenv-ctags.git ~/.rbenv/plugins/rbenv-ctags
+  git_install https://github.com/sstephenson/rbenv-default-gems.git ~/.rbenv/plugins/rbenv-default-gems
+  git_install https://github.com/rkh/rbenv-update.git ~/.rbenv/plugins/rbenv-update
+  if [[ $OS == 'mac' ]]; then
+    git_install git://github.com/tpope/rbenv-readline.git ~/.rbenv/plugins/rbenv-readline
+  fi
+  ask_prompt "Add rbenv to your bash/zsh config? (Choose yes only if this is a fresh install of rbenv, not an update)", rbenv_config
+)
+
+ask_block "Install pyenv? (fork of rbenv for managing Python installs)" && (
+  output "Installing pyenv and plugins"
+  git_install git://github.com/yyuu/pyenv.git ~/.pyenv
+  git_install git://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+  ask_prompt "Add pyenv to your bash/zsh config? (Choose yes only if this is a fresh install of pyenv, not an update)", pyenv_config
+)
+
+ask_block "Install Virtualbox and Vagrant? (required for running dev environments)" && (
+  output "Installing Virtualbox and Vagrant"
+  if [[ $OS == 'linux' ]]; then
+    apt_key http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc
+    add_apt_list "deb http://download.virtualbox.org/virtualbox/debian $(distro_name) contrib" virtualbox
+    apt_update
+    apt_install virtualbox-4.3
+    # Vagrant, y u no apt repo?
+    deb_install https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb
+  elif [[ $OS == 'mac' ]]; then
+    cask_install virtualbox
+    cask_install vagrant
+    nfsd checkexports
+  fi
+  vagrant plugin install vagrant-digitalocean
+  vagrant plugin install vagrant-vbox-snapshot
+  vagrant plugin install vagrant-vbguest
+  vagrant plugin install dotenv
+)
+
+ask_block "Install rcm? (dotfiles manager)" && (
+  output "Installing rcm"
+  if [[ $OS == 'linux' ]]; then
+    deb_install http://mike-burns.com/project/rcm/rcm_1.1.0_all.deb
+  elif [[ $OS == 'mac' ]]; then
+    brew tap mike-burns/rcm
+    brew_install rcm
+  fi
+)
+
 if [[ $OS == 'linux' ]]; then
-  add_apt_list "deb http://archive.canonical.com/ $(distro_name) partner"
-  apt_update
-  apt_install skype
-elif [[ $OS == 'mac' ]]; then
-  cask_install skype
+  ask_block "Install good looking non-free fonts?" && (
+    output "Linux: Font packages"
+    apt_install ttf-mscorefonts-installer fonts-inconsolata fonts-opensymbol mathematica-fonts
+    output "Linux: Installing Typecatcher for access to Google Webfonts"
+    add_apt ppa:andrewsomething/typecatcher
+    apt_update
+    apt_install typecatcher
+  )
+fi
+
+ask_block "Install HipChat?" && (
+  output "Installing HipChat"
+  if [[ $OS == 'linux' ]]; then
+    apt_key https://www.hipchat.com/keys/hipchat-linux.key
+    add_apt_list "deb http://downloads.hipchat.com/linux/apt stable main" atlassian-hipchat
+    apt_update
+    apt_install hipchat
+  elif [[ $OS == 'mac' ]]; then
+    cask_install hipchat
+  fi
+)
+
+ask_block "Install Dropbox?" && (
+  output "Installing Dropbox"
+  if [[ $OS == 'linux' ]]; then
+    if ! command -v dropbox > /dev/null; then
+      deb_install https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_1.6.0_amd64.deb
+    fi
+  elif [[ $OS == 'mac' ]]; then
+    cask_install dropbox
+  fi
+)
+
+if [[ $OS == 'mac' ]]; then
+  ask_block "Install Google Drive?" && (
+    output "Installing Google Drive"
+    cask_install google-drive
+  )
 fi
 
 if [[ $OS == 'mac' ]]; then
-  output "Installing Screenhero"
-  cask_install screenhero
+  ask_block "Install Harvest time tracking widget?" && (
+    output "Installing Harvest time tracking widget"
+    cask_install harvest
+  )
+fi
+
+ask_block "Install Skype?" && (
+  output "Installing Skype"
+  if [[ $OS == 'linux' ]]; then
+    add_apt_list "deb http://archive.canonical.com/ $(distro_name) partner"
+    apt_update
+    apt_install skype
+  elif [[ $OS == 'mac' ]]; then
+    cask_install skype
+  fi
+)
+
+if [[ $OS == 'mac' ]]; then
+  ask_block "Install Screenhero?" && (
+    output "Installing Screenhero"
+    cask_install screenhero
+  )
 fi
 
 if [[ $OS == 'mac' ]]; then
-  output "Installing Mou markdown editor"
-  cask_install mou
+  ask_block "Install Mou? (Markdown editor)" && (
+    output "Installing Mou markdown editor"
+    cask_install mou
+  )
 fi
 
-output "Installing JSHint"
-sudo npm install -g jshint
+ask_block "Install JSHint? (JavaScript code linter)" && (
+  output "Installing JSHint"
+  sudo npm install -g jshint
+)
 
-output "Installing IE virtual machines (ievms) and control tool (iectrl)"
-curl -s https://raw.github.com/xdissent/ievms/master/ievms.sh | bash
-sudo npm install -g iectrl
+ask_block "Install IE virtual machines? (ievms)" && (
+  output "Installing IE virtual machines (ievms) and control tool (iectrl)"
+  curl -s https://raw.github.com/xdissent/ievms/master/ievms.sh | bash
+  sudo npm install -g iectrl
+)
 
-output ".gitconfig setup"
-read -p "Enter your full name (first and last name) and press Enter: " git_name
-git config --global user.name "$git_name"
-read -p "Enter your Jaguar email address and press Enter: " git_email
-git config --global user.email $git_email
+ask_block "Configure Git?" && (
+  output ".gitconfig setup"
+  read -p "Enter your full name (first and last name) and press Enter: " git_name
+  git config --global user.name "$git_name"
+  read -p "Enter your Jaguar email address and press Enter: " git_email
+  git config --global user.email $git_email
+)
+
+output ""
+output "All done! Thanks for using START ME UP"
 
 # vim: set ft=bash
