@@ -453,16 +453,6 @@ ask_block "Install Virtualbox and Vagrant? (required for running dev environment
   vagrant plugin install dotenv
 )
 
-ask_block "Install rcm? (dotfiles manager)" && (
-  output "Installing rcm"
-  if [[ $OS == 'linux' ]]; then
-    deb_install http://mike-burns.com/project/rcm/rcm_1.1.0_all.deb
-  elif [[ $OS == 'mac' ]]; then
-    brew tap mike-burns/rcm
-    brew_install rcm
-  fi
-)
-
 if [[ $OS == 'linux' ]]; then
   ask_block "Install good looking non-free fonts?" && (
     output "Font packages"
