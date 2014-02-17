@@ -214,31 +214,37 @@ if [[ $OS == 'mac' ]]; then
 fi
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install Homebrew?" && (
+  ask_block "Install Homebrew? (must install if not already installed)" && (
     output "Mac: Installing Homebrew"
     ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
-    output "Installing Casks, Homebrew addon for GUI apps"
-    brew tap phinze/homebrew-cask
-    brew_install brew-cask
-    brew tap caskroom/versions
-    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-    append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.bashrc
-    append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.zshrc
     brew install curl-ca-bundle
     append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
     append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
   )
 fi
 
+if [[ $OS == 'mac' ]]; then
+  ask_block "Install Homebrew Cask? (Homebrew addon for GUI apps - must install if not already installed)" && (
+    output "Installing Cask, Homebrew addon for GUI apps"
+    brew tap phinze/homebrew-cask
+    brew_install brew-cask
+    brew tap caskroom/versions
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.bashrc
+    append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.zshrc
+  )
+fi
 
-ask_block "Install development packages?" && (
-  output "Installing development packages"
-  if [[ $OS == 'linux' ]]; then
-    apt_install build-essential bison openssl libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libc6-dev automake cmake libc6-dev libmysql++-dev libsqlite3-dev make phantomjs
-  elif [[ $OS == 'mac' ]]; then
-    brew_install gdbm libffi libksba libyaml phantomjs qt
-  fi
-)
+if [[ $OS == 'mac' ]]; then
+  ask_block "Install bash? (bash included with OS X is out of date)" && (
+    output "Installing bash"
+    brew_install bash
+    if ! grep -Fxq /usr/local/bin/bash /etc/shells; then
+      echo "/usr/local/bin/bash" | sudo tee -a /etc/shells
+    fi
+    ask_prompt "Do you want to set bash as your default shell?" "chsh -s /usr/local/bin/bash"
+  )
+fi
 
 ask_block "Install zsh?" && (
   output "Installing zsh"
@@ -257,8 +263,17 @@ ask_block "Install zsh?" && (
   fi
 )
 
+ask_block "Install development packages?" && (
+  output "Installing development packages"
+  if [[ $OS == 'linux' ]]; then
+    apt_install build-essential bison openssl libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libc6-dev automake cmake libc6-dev libmysql++-dev libsqlite3-dev make phantomjs
+  elif [[ $OS == 'mac' ]]; then
+    brew_install gdbm libffi libksba libyaml phantomjs qt
+  fi
+)
+
 ask_block "Install version control systems?" && (
-  output "Installing version control clients"
+  output "Installing version control systems"
   install git subversion
 )
 
@@ -447,6 +462,13 @@ if [[ $OS == 'linux' ]]; then
     add_apt ppa:andrewsomething/typecatcher
     apt_update
     apt_install typecatcher
+  )
+fi
+
+if [[ $OS == 'mac' ]]; then
+  ask_block "Install iterm2? (better terminal emulator)" && (
+    output "Installing iterm2"
+    cask_install iterm2-beta
   )
 fi
 
