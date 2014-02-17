@@ -188,7 +188,7 @@ if [[ $OS == 'linux' ]]; then
 fi
 
 if [[ $OS == 'linux' ]]; then
-  output "Linux: enabling multiarch"
+  output "Enabling multiarch"
   sudo dpkg --add-architecture i386
 fi
 
@@ -201,21 +201,30 @@ if [[ $OS == 'linux' ]]; then
 fi
 
 if [[ $OS == 'linux' ]]; then
-  output "Linux: Updating package cache, upgrading installed packages"
+  output "Updating package cache, upgrading installed packages"
   apt_update
   apt_upgrade
 fi
 
 if [[ $OS == 'mac' ]]; then
   ask_block "Install Xcode?" && (
-    output "Mac: installing Xcode"
+    output "Installing Xcode"
+    output ""
+    output "Opening Xcode page in App Store in 5 seconds."
+    output "Once Xcode is installed, return here and continue."
+    sleep 5
+    open -n 'macappstore://itunes.apple.com/us/app/xcode/id497799835'
+    sleep 10
+    read -p "Press Enter once you've completed installing Xcode..."
+    output "Installing Xcode Command Line Tools"
     bash <(curl -s https://raw.github.com/timsutton/osx-vm-templates/master/scripts/xcode-cli-tools.sh)
+    output ""
   )
 fi
 
 if [[ $OS == 'mac' ]]; then
   ask_block "Install Homebrew? (must install if not already installed)" && (
-    output "Mac: Installing Homebrew"
+    output "Installing Homebrew"
     ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
     brew install curl-ca-bundle
     append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
@@ -456,9 +465,9 @@ ask_block "Install rcm? (dotfiles manager)" && (
 
 if [[ $OS == 'linux' ]]; then
   ask_block "Install good looking non-free fonts?" && (
-    output "Linux: Font packages"
+    output "Font packages"
     apt_install ttf-mscorefonts-installer fonts-inconsolata fonts-opensymbol mathematica-fonts
-    output "Linux: Installing Typecatcher for access to Google Webfonts"
+    output "Installing Typecatcher for access to Google Webfonts"
     add_apt ppa:andrewsomething/typecatcher
     apt_update
     apt_install typecatcher
