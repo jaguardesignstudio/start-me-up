@@ -188,6 +188,10 @@ if [[ $OS == 'mac' ]]; then
     brew install curl-ca-bundle
     append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
     append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
+    # move /usr/local/bin to the top of /etc/paths
+    echo "/usr/local/bin" | cat - /etc/paths | awk '!seen[$0]++' > /tmp/out && sudo mv /tmp/out /etc/paths
+    # put /usr/local/bin at the front of PATH in the current session
+    export PATH="/usr/local/bin:$PATH"
   )
 fi
 
