@@ -143,6 +143,7 @@ rbenv_config() {
   echo 'gem-browse' >> ~/.rbenv/default-gems
   echo 'git-up' >> ~/.rbenv/default-gems
   echo 'foreman' >> ~/.rbenv/default-gems
+  echo 'middleman' >> ~/.rbenv/default-gems
   echo 'rubocop' >> ~/.rbenv/default-gems
   echo 'paint' >> ~/.rbenv/default-gems
   echo 'pry' >> ~/.rbenv/default-gems
@@ -153,6 +154,7 @@ rbenv_config() {
   if [[ $OS == 'mac' ]]; then
     echo 'cocoapods' >> ~/.rbenv/default-gems
     echo 'lunchy' >> ~/.rbenv/default-gems
+    echo 'terminal-notifier' >> ~/.rbenv/default-gems
   fi
 }
 
@@ -447,10 +449,11 @@ ask_block "Install Virtualbox and Vagrant? (required for running dev environment
     cask_install vagrant
     nfsd checkexports
   fi
-  vagrant plugin install vagrant-digitalocean
-  vagrant plugin install vagrant-vbox-snapshot
-  vagrant plugin install vagrant-vbguest
   vagrant plugin install dotenv
+  vagrant plugin install vagrant-digitalocean
+  vagrant plugin install vagrant-notify
+  vagrant plugin install vagrant-vbguest
+  vagrant plugin install vagrant-vbox-snapshot
 )
 
 if [[ $OS == 'linux' ]]; then
