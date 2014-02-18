@@ -46,7 +46,7 @@ binary_check() {
   fi
 }
 
-ask_block() {
+ask_prompt() {
   if [[ $auto_confirm =~ [Yy] ]] ; then
     true
   else
@@ -56,13 +56,6 @@ ask_block() {
     else
       false
     fi
-  fi
-}
-
-ask_prompt() {
-  read -p "$1 [y/N] " answer
-  if [[ $answer =~ [Yy] ]] ; then
-    "$2"
   fi
 }
 
@@ -127,49 +120,6 @@ apt_key() {
   wget -q -O - $1 | sudo apt-key add - > /dev/null
 }
 
-rbenv_config() {
-  if [[ $OS == 'mac' ]]; then
-    append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.bash_profile
-    append_if_missing 'eval "$(rbenv init -)"' ~/.bash_profile
-  elif [[ $OS == 'linux' ]]; then
-    append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.bashrc
-    append_if_missing 'eval "$(rbenv init -)"' ~/.bashrc
-  fi
-  append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.zshrc
-  append_if_missing 'eval "$(rbenv init -)"' ~/.zshrc
-  # Default gems
-  echo 'bundler' > ~/.rbenv/default-gems
-  echo 'gem-ctags' >> ~/.rbenv/default-gems
-  echo 'gem-browse' >> ~/.rbenv/default-gems
-  echo 'git-up' >> ~/.rbenv/default-gems
-  echo 'foreman' >> ~/.rbenv/default-gems
-  echo 'middleman' >> ~/.rbenv/default-gems
-  echo 'rubocop' >> ~/.rbenv/default-gems
-  echo 'paint' >> ~/.rbenv/default-gems
-  echo 'pry' >> ~/.rbenv/default-gems
-  echo 'pry-remote' >> ~/.rbenv/default-gems
-  echo 'pry-coolline' >> ~/.rbenv/default-gems
-  echo 'awesome_print' >> ~/.rbenv/default-gems
-  echo 'coderay' >> ~/.rbenv/default-gems
-  if [[ $OS == 'mac' ]]; then
-    echo 'cocoapods' >> ~/.rbenv/default-gems
-    echo 'lunchy' >> ~/.rbenv/default-gems
-    echo 'terminal-notifier' >> ~/.rbenv/default-gems
-  fi
-}
-
-pyenv_config() {
-  if [[ $OS == 'mac' ]]; then
-    append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.bash_profile
-    append_if_missing 'eval "$(pyenv init -)"' ~/.bash_profile
-  elif [[ $OS == 'linux' ]]; then
-    append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.bashrc
-    append_if_missing 'eval "$(pyenv init -)"' ~/.bashrc
-  fi
-  append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.zshrc
-  append_if_missing 'eval "$(pyenv init -)"' ~/.zshrc
-}
-
 ################
 # START ME UP! #
 ################
@@ -202,7 +152,7 @@ if [[ $OS == 'mac' ]]; then
 fi
 
 if [[ $OS == 'linux' ]]; then
-  ask_block "Enable universe/multiverse repos?" && (
+  ask_prompt "Enable universe/multiverse repos?" && (
     output "Enabling universe/multiverse repos"
     add_apt_list "deb http://us.archive.ubuntu.com/ubuntu/ $(distro_name) universe multiverse" universe
     add_apt_list "deb http://us.archive.ubuntu.com/ubuntu/ $(distro_name)-updates universe multiverse" universe
@@ -216,7 +166,7 @@ if [[ $OS == 'linux' ]]; then
 fi
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install Xcode?" && (
+  ask_prompt "Install Xcode?" && (
     output "Installing Xcode"
     output ""
     output "Opening Xcode page in App Store in 5 seconds."
@@ -232,7 +182,7 @@ if [[ $OS == 'mac' ]]; then
 fi
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install Homebrew? (must install if not already installed)" && (
+  ask_prompt "Install Homebrew? (must install if not already installed)" && (
     output "Installing Homebrew"
     ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
     brew install curl-ca-bundle
@@ -242,7 +192,7 @@ if [[ $OS == 'mac' ]]; then
 fi
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install Homebrew Cask? (Homebrew addon for GUI apps - must install if not already installed)" && (
+  ask_prompt "Install Homebrew Cask? (Homebrew addon for GUI apps - must install if not already installed)" && (
     output "Installing Cask, Homebrew addon for GUI apps"
     brew tap phinze/homebrew-cask
     brew_install brew-cask
@@ -254,21 +204,25 @@ if [[ $OS == 'mac' ]]; then
 fi
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install bash? (bash included with OS X is out of date)" && (
+  ask_prompt "Install bash? (bash included with OS X is out of date)" && (
     output "Installing bash"
     brew_install bash
     if ! grep -Fxq /usr/local/bin/bash /etc/shells; then
       echo "/usr/local/bin/bash" | sudo tee -a /etc/shells
     fi
-    ask_prompt "Do you want to set bash as your default shell?" "chsh -s /usr/local/bin/bash"
+    ask_prompt "Do you want to set bash as your default shell?" && (
+      chsh -s /usr/local/bin/bash
+    )
   )
 fi
 
-ask_block "Install zsh?" && (
+ask_prompt "Install zsh?" && (
   output "Installing zsh"
   if [[ $OS == 'linux' ]]; then
     apt_install zsh
-    ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/bin/zsh"
+    ask_prompt "Do you want to set zsh as your default shell?" && (
+      chsh -s /usr/bin/zsh
+    )
   elif [[ $OS == 'mac' ]]; then
     brew_install zsh reattach-to-user-namespace
     if test -f /etc/zshenv; then
@@ -277,11 +231,13 @@ ask_block "Install zsh?" && (
     if ! grep -Fxq /usr/local/bin/zsh /etc/shells; then
       echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
     fi
-    ask_prompt "Do you want to set zsh as your default shell?" "chsh -s /usr/local/bin/zsh"
+    ask_prompt "Do you want to set zsh as your default shell?" && (
+      chsh -s /usr/local/bin/zsh
+    )
   fi
 )
 
-ask_block "Install development packages?" && (
+ask_prompt "Install development packages?" && (
   output "Installing development packages"
   if [[ $OS == 'linux' ]]; then
     apt_install build-essential bison openssl libreadline6 libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libc6-dev automake cmake libc6-dev libmysql++-dev libsqlite3-dev make phantomjs
@@ -290,12 +246,12 @@ ask_block "Install development packages?" && (
   fi
 )
 
-ask_block "Install version control systems?" && (
+ask_prompt "Install version control systems?" && (
   output "Installing version control systems"
   install git subversion
 )
 
-ask_block "Install node.js? (Used for JSHint and IE VMs controller)" && (
+ask_prompt "Install node.js? (Used for JSHint and IE VMs controller)" && (
   output "Installing node.js"
   if [[ $OS == 'linux' ]]; then
     apt_install nodejs
@@ -304,12 +260,12 @@ ask_block "Install node.js? (Used for JSHint and IE VMs controller)" && (
   fi
 )
 
-ask_block "Install tmux?" && (
+ask_prompt "Install tmux?" && (
   output "Installing tmux"
   install tmux
 )
 
-ask_block "Install htop? (better 'top' command)" && (
+ask_prompt "Install htop? (better 'top' command)" && (
   output "Installing htop"
   if [[ $OS == 'linux' ]]; then
     apt_install htop
@@ -318,7 +274,7 @@ ask_block "Install htop? (better 'top' command)" && (
   fi
 )
 
-ask_block "Install PgAdmin3? (PostgreSQL GUI client)" && (
+ask_prompt "Install PgAdmin3? (PostgreSQL GUI client)" && (
   output "Installing PgAdmin3"
   if [[ $OS == 'linux' ]]; then
     apt_install pgadmin3
@@ -327,7 +283,7 @@ ask_block "Install PgAdmin3? (PostgreSQL GUI client)" && (
   fi
 )
 
-ask_block "Install latest Vim build? (Best text editor evar!)" && (
+ask_prompt "Install latest Vim build? (Best text editor evar!)" && (
   output "Installing vim (latest)"
   if [[ $OS == 'linux' ]]; then
     add_apt ppa:dgadomski/vim-daily
@@ -338,7 +294,7 @@ ask_block "Install latest Vim build? (Best text editor evar!)" && (
 )
 
 # TODO: Add option for Sublime Text 3
-ask_block "Install Sublime Text 2?" && (
+ask_prompt "Install Sublime Text 2?" && (
   output "Installing Sublime Text"
   if [[ $OS == 'linux' ]]; then
     add_apt ppa:webupd8team/sublime-text-2
@@ -349,7 +305,7 @@ ask_block "Install Sublime Text 2?" && (
   fi
 )
 
-ask_block "Install ctags?" && (
+ask_prompt "Install ctags?" && (
   output "Installing ctags"
   if [[ $OS == 'linux' ]]; then
     apt_install exuberant-ctags
@@ -358,7 +314,7 @@ ask_block "Install ctags?" && (
   fi
 )
 
-ask_block "Install ag? (grep-like code searching)" && (
+ask_prompt "Install ag? (grep-like code searching)" && (
   output "Installing ag (aka The Silver Searcher)"
   if [[ $OS == 'linux' ]]; then
     apt_install silversearcher-ag
@@ -367,7 +323,7 @@ ask_block "Install ag? (grep-like code searching)" && (
   fi
 )
 
-ask_block "Install keyboard-based launcher? (Synapse in Linux, Alfred in OS X)" && (
+ask_prompt "Install keyboard-based launcher? (Synapse in Linux, Alfred in OS X)" && (
   if [[ $OS == 'linux' ]]; then
     output "Installing Synapse"
     apt_install synapse
@@ -377,7 +333,7 @@ ask_block "Install keyboard-based launcher? (Synapse in Linux, Alfred in OS X)" 
   fi
 )
 
-ask_block "Install Google Chrome?" && (
+ask_prompt "Install Google Chrome?" && (
   output "Installing Google Chrome"
   if [[ $OS == 'linux' ]]; then
     apt_key https://dl-ssl.google.com/linux/linux_signing_key.pub
@@ -389,7 +345,7 @@ ask_block "Install Google Chrome?" && (
   fi
 )
 
-ask_block "Install pre-release Chrome for testing?" && (
+ask_prompt "Install pre-release Chrome for testing?" && (
   if [[ $OS == 'linux' ]]; then
     output "Installing Chromium (Dev channel)"
     add_apt ppa:saiarcot895/chromium-dev
@@ -401,7 +357,7 @@ ask_block "Install pre-release Chrome for testing?" && (
   fi
 )
 
-ask_block "Install Firefox?" && (
+ask_prompt "Install Firefox?" && (
   output "Installing Firefox"
   if [[ $OS == 'linux' ]]; then
     apt_install firefox
@@ -410,7 +366,7 @@ ask_block "Install Firefox?" && (
   fi
 )
 
-ask_block "Install pre-release Firefox for testing?" && (
+ask_prompt "Install pre-release Firefox for testing?" && (
   if [[ $OS == 'linux' ]]; then
     output "Install Firefox Nightly"
     add_apt ppa:ubuntu-mozilla-daily/ppa
@@ -422,7 +378,7 @@ ask_block "Install pre-release Firefox for testing?" && (
   fi
 )
 
-ask_block "Install rbenv? (Ruby version manager)" && (
+ask_prompt "Install rbenv? (Ruby version manager)" && (
   output "Installing rbenv and plugins"
   git_install https://github.com/sstephenson/rbenv.git ~/.rbenv
   git_install https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
@@ -432,17 +388,56 @@ ask_block "Install rbenv? (Ruby version manager)" && (
   if [[ $OS == 'mac' ]]; then
     git_install git://github.com/tpope/rbenv-readline.git ~/.rbenv/plugins/rbenv-readline
   fi
-  ask_prompt "Add rbenv to your bash/zsh config? (Choose yes only if this is a fresh install of rbenv, not an update)", rbenv_config
+  ask_prompt "Add rbenv to your bash/zsh config? (Choose yes only if this is a fresh install of rbenv, not an update)" && (
+    if [[ $OS == 'mac' ]]; then
+      append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.bash_profile
+      append_if_missing 'eval "$(rbenv init -)"' ~/.bash_profile
+    elif [[ $OS == 'linux' ]]; then
+      append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.bashrc
+      append_if_missing 'eval "$(rbenv init -)"' ~/.bashrc
+    fi
+    append_if_missing 'export PATH="$HOME/.rbenv/bin:$PATH"' ~/.zshrc
+    append_if_missing 'eval "$(rbenv init -)"' ~/.zshrc
+    # Default gems
+    echo 'bundler' > ~/.rbenv/default-gems
+    echo 'gem-ctags' >> ~/.rbenv/default-gems
+    echo 'gem-browse' >> ~/.rbenv/default-gems
+    echo 'git-up' >> ~/.rbenv/default-gems
+    echo 'foreman' >> ~/.rbenv/default-gems
+    echo 'middleman' >> ~/.rbenv/default-gems
+    echo 'rubocop' >> ~/.rbenv/default-gems
+    echo 'paint' >> ~/.rbenv/default-gems
+    echo 'pry' >> ~/.rbenv/default-gems
+    echo 'pry-remote' >> ~/.rbenv/default-gems
+    echo 'pry-coolline' >> ~/.rbenv/default-gems
+    echo 'awesome_print' >> ~/.rbenv/default-gems
+    echo 'coderay' >> ~/.rbenv/default-gems
+    if [[ $OS == 'mac' ]]; then
+      echo 'cocoapods' >> ~/.rbenv/default-gems
+      echo 'lunchy' >> ~/.rbenv/default-gems
+      echo 'terminal-notifier' >> ~/.rbenv/default-gems
+    fi
+  )
 )
 
-ask_block "Install pyenv? (fork of rbenv for managing Python installs)" && (
+ask_prompt "Install pyenv? (fork of rbenv for managing Python installs)" && (
   output "Installing pyenv and plugins"
   git_install git://github.com/yyuu/pyenv.git ~/.pyenv
   git_install git://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
-  ask_prompt "Add pyenv to your bash/zsh config? (Choose yes only if this is a fresh install of pyenv, not an update)", pyenv_config
+  ask_prompt "Add pyenv to your bash/zsh config? (Choose yes only if this is a fresh install of pyenv, not an update)" && (
+    if [[ $OS == 'mac' ]]; then
+      append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.bash_profile
+      append_if_missing 'eval "$(pyenv init -)"' ~/.bash_profile
+    elif [[ $OS == 'linux' ]]; then
+      append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.bashrc
+      append_if_missing 'eval "$(pyenv init -)"' ~/.bashrc
+    fi
+    append_if_missing 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.zshrc
+    append_if_missing 'eval "$(pyenv init -)"' ~/.zshrc
+  )
 )
 
-ask_block "Install Virtualbox and Vagrant? (required for running dev environments)" && (
+ask_prompt "Install Virtualbox and Vagrant? (required for running dev environments)" && (
   output "Installing Virtualbox and Vagrant"
   if [[ $OS == 'linux' ]]; then
     apt_key http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc
@@ -464,7 +459,7 @@ ask_block "Install Virtualbox and Vagrant? (required for running dev environment
 )
 
 if [[ $OS == 'linux' ]]; then
-  ask_block "Install good looking non-free fonts?" && (
+  ask_prompt "Install good looking non-free fonts?" && (
     output "Font packages"
     apt_install ttf-mscorefonts-installer fonts-inconsolata fonts-opensymbol mathematica-fonts
     output "Installing Typecatcher for access to Google Webfonts"
@@ -475,13 +470,13 @@ if [[ $OS == 'linux' ]]; then
 fi
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install iterm2? (better terminal emulator)" && (
+  ask_prompt "Install iterm2? (better terminal emulator)" && (
     output "Installing iterm2"
     cask_install iterm2-beta
   )
 fi
 
-ask_block "Install HipChat?" && (
+ask_prompt "Install HipChat?" && (
   output "Installing HipChat"
   if [[ $OS == 'linux' ]]; then
     apt_key https://www.hipchat.com/keys/hipchat-linux.key
@@ -493,7 +488,7 @@ ask_block "Install HipChat?" && (
   fi
 )
 
-ask_block "Install Dropbox?" && (
+ask_prompt "Install Dropbox?" && (
   output "Installing Dropbox"
   if [[ $OS == 'linux' ]]; then
     if ! command -v dropbox > /dev/null; then
@@ -505,20 +500,20 @@ ask_block "Install Dropbox?" && (
 )
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install Google Drive?" && (
+  ask_prompt "Install Google Drive?" && (
     output "Installing Google Drive"
     cask_install google-drive
   )
 fi
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install Harvest time tracking widget?" && (
+  ask_prompt "Install Harvest time tracking widget?" && (
     output "Installing Harvest time tracking widget"
     cask_install harvest
   )
 fi
 
-ask_block "Install Skype?" && (
+ask_prompt "Install Skype?" && (
   output "Installing Skype"
   if [[ $OS == 'linux' ]]; then
     add_apt_list "deb http://archive.canonical.com/ $(distro_name) partner"
@@ -530,31 +525,31 @@ ask_block "Install Skype?" && (
 )
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install Screenhero?" && (
+  ask_prompt "Install Screenhero?" && (
     output "Installing Screenhero"
     cask_install screenhero
   )
 fi
 
 if [[ $OS == 'mac' ]]; then
-  ask_block "Install Mou? (Markdown editor)" && (
+  ask_prompt "Install Mou? (Markdown editor)" && (
     output "Installing Mou markdown editor"
     cask_install mou
   )
 fi
 
-ask_block "Install JSHint? (JavaScript code linter)" && (
+ask_prompt "Install JSHint? (JavaScript code linter)" && (
   output "Installing JSHint"
   sudo npm install -g jshint
 )
 
-ask_block "Install IE virtual machines? (ievms)" && (
+ask_prompt "Install IE virtual machines? (ievms)" && (
   output "Installing IE virtual machines (ievms) and control tool (iectrl)"
   curl -s https://raw.github.com/xdissent/ievms/master/ievms.sh | bash
   sudo npm install -g iectrl
 )
 
-ask_block "Configure Git?" && (
+ask_prompt "Configure Git?" && (
   output ".gitconfig setup"
   read -p "Enter your FULL name (first and last) and press Enter: " git_name
   git config --global user.name "$git_name"
