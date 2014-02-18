@@ -62,7 +62,7 @@ ask_block() {
 ask_prompt() {
   read -p "$1 [y/N] " answer
   if [[ $answer =~ [Yy] ]] ; then
-    "$@"
+    "$2"
   fi
 }
 
