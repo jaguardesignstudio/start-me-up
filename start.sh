@@ -194,6 +194,13 @@ if [[ $OS == 'linux' ]]; then
   sudo dpkg --add-architecture i386
 fi
 
+if [[ $OS == 'mac' ]]; then
+  output "Adding shell config files to HOME"
+  touch ~/.bash_profile
+  touch ~/.bashrc
+  touch ~/.zshrc
+fi
+
 if [[ $OS == 'linux' ]]; then
   ask_block "Enable universe/multiverse repos?" && (
     output "Enabling universe/multiverse repos"
@@ -549,7 +556,7 @@ ask_block "Install IE virtual machines? (ievms)" && (
 
 ask_block "Configure Git?" && (
   output ".gitconfig setup"
-  read -p "Enter your full name (first and last name) and press Enter: " git_name
+  read -p "Enter your FULL name (first and last) and press Enter: " git_name
   git config --global user.name "$git_name"
   read -p "Enter your Jaguar email address and press Enter: " git_email
   git config --global user.email $git_email
