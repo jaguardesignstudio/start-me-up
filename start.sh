@@ -496,6 +496,13 @@ if [[ $OS == 'mac' ]]; then
   )
 fi
 
+if [[ $OS == 'mac' ]]; then
+  ask_prompt "Install asepsis? (redirects .DS_Store files to a separate folder, no more .DS_Store pollution)" && (
+    output "Installing asepsis"
+    cask_install asepsis
+  )
+fi
+
 ask_prompt "Install HipChat?" && (
   output "Installing HipChat"
   if [[ $OS == 'linux' ]]; then
