@@ -348,6 +348,7 @@ ask_prompt "Install keyboard-based launcher? (Synapse in Linux, Alfred in OS X)"
   elif [[ $OS == 'mac' ]]; then
     output "Installing Alfred"
     cask_install alfred
+    brew cask alfred link
   fi
 )
 
@@ -422,6 +423,7 @@ ask_prompt "Install rbenv? (Ruby version manager)" && (
     echo 'gem-browse' >> ~/.rbenv/default-gems
     echo 'git-up' >> ~/.rbenv/default-gems
     echo 'foreman' >> ~/.rbenv/default-gems
+    echo 'html2haml' >> ~/.rbenv/default-gems
     echo 'middleman' >> ~/.rbenv/default-gems
     echo 'rubocop' >> ~/.rbenv/default-gems
     echo 'paint' >> ~/.rbenv/default-gems
@@ -546,13 +548,6 @@ if [[ $OS == 'mac' ]]; then
   ask_prompt "Install Screenhero?" && (
     output "Installing Screenhero"
     cask_install screenhero
-  )
-fi
-
-if [[ $OS == 'mac' ]]; then
-  ask_prompt "Install Mou? (Markdown editor)" && (
-    output "Installing Mou markdown editor"
-    cask_install mou
   )
 fi
 
