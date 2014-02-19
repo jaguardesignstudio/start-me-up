@@ -203,7 +203,8 @@ if [[ $OS == 'mac' ]]; then
     append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
     # move /usr/local/bin to the top of /etc/paths
     echo "/usr/local/bin" | cat - /etc/paths | awk '!seen[$0]++' > /tmp/out && sudo mv /tmp/out /etc/paths
-    # put /usr/local/bin at the front of PATH in the current session
+    # Set env vars for current shell
+    SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt
     PATH="/usr/local/bin:$PATH"
   )
 fi
@@ -214,7 +215,7 @@ if [[ $OS == 'mac' ]]; then
     brew tap phinze/homebrew-cask
     brew_install brew-cask
     brew tap caskroom/versions
-    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    HOMEBREW_CASK_OPTS="--appdir=/Applications"
     append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.bashrc
     append_if_missing 'export HOMEBREW_CASK_OPTS="--appdir=/Applications"' ~/.zshrc
   )
