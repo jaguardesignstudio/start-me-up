@@ -185,7 +185,7 @@ if [[ $OS == 'mac' ]]; then
     sleep 5
     open -n 'macappstore://itunes.apple.com/us/app/xcode/id497799835'
     sleep 10
-    read -p "Press Enter once you've completed installing Xcode..."
+    read -p "Press Enter once Xcode is fully downloaded and installed..."
     output "Running xcodebuild to accept Xcode license..."
     sudo xcodebuild -license
     output "Installing Xcode Command Line Tools"
@@ -204,7 +204,7 @@ if [[ $OS == 'mac' ]]; then
     # move /usr/local/bin to the top of /etc/paths
     echo "/usr/local/bin" | cat - /etc/paths | awk '!seen[$0]++' > /tmp/out && sudo mv /tmp/out /etc/paths
     # put /usr/local/bin at the front of PATH in the current session
-    export PATH="/usr/local/bin:$PATH"
+    PATH="/usr/local/bin:$PATH"
   )
 fi
 
@@ -466,7 +466,7 @@ ask_prompt "Install Virtualbox and Vagrant? (required for running dev environmen
   elif [[ $OS == 'mac' ]]; then
     cask_install virtualbox
     cask_install vagrant
-    nfsd checkexports
+    sudo nfsd checkexports
   fi
   vagrant plugin install dotenv
   vagrant plugin install vagrant-digitalocean
