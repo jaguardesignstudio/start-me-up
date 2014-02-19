@@ -59,6 +59,15 @@ ask_prompt() {
   fi
 }
 
+ask_prompt_no_skip() {
+  read -p "$1 [y/N] " answer
+  if [[ $answer =~ [Yy] ]] ; then
+    true
+  else
+    false
+  fi
+}
+
 append_if_missing() {
   if ! grep -Fxq "$1" "$2"; then
     echo "$1" >> "$2"
@@ -127,7 +136,9 @@ apt_key() {
 output ""
 output "START ME UP"
 output ""
-
+output "Jaguar's system provisioning script"
+output "Note: You will be asked to enter your password and press Enter a few times, so don't run off!"
+output ""
 output "Do you wish to run the entire script automatically?"
 output "(If 'Y', entire script will install without ask prompts)"
 output "(Choose 'Y' for fresh installs, 'N' if running on a non-fresh system)"
@@ -175,6 +186,8 @@ if [[ $OS == 'mac' ]]; then
     open -n 'macappstore://itunes.apple.com/us/app/xcode/id497799835'
     sleep 10
     read -p "Press Enter once you've completed installing Xcode..."
+    output "Running xcodebuild to accept Xcode license..."
+    sudo xcodebuild -license
     output "Installing Xcode Command Line Tools"
     bash <(curl -s https://raw.github.com/timsutton/osx-vm-templates/master/scripts/xcode-cli-tools.sh)
     output ""
@@ -214,7 +227,7 @@ if [[ $OS == 'mac' ]]; then
     if ! grep -Fxq /usr/local/bin/bash /etc/shells; then
       echo "/usr/local/bin/bash" | sudo tee -a /etc/shells
     fi
-    ask_prompt "Do you want to set bash as your default shell?" && (
+    ask_prompt_no_skip "Do you want to set bash as your default shell?" && (
       chsh -s /usr/local/bin/bash
     )
   )
@@ -224,7 +237,7 @@ ask_prompt "Install zsh?" && (
   output "Installing zsh"
   if [[ $OS == 'linux' ]]; then
     apt_install zsh
-    ask_prompt "Do you want to set zsh as your default shell?" && (
+    ask_prompt_no_skip "Do you want to set zsh as your default shell?" && (
       chsh -s /usr/bin/zsh
     )
   elif [[ $OS == 'mac' ]]; then
@@ -235,7 +248,7 @@ ask_prompt "Install zsh?" && (
     if ! grep -Fxq /usr/local/bin/zsh /etc/shells; then
       echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
     fi
-    ask_prompt "Do you want to set zsh as your default shell?" && (
+    ask_prompt_no_skip "Do you want to set zsh as your default shell?" && (
       chsh -s /usr/local/bin/zsh
     )
   fi
@@ -299,7 +312,7 @@ ask_prompt "Install latest Vim build? (Best text editor evar!)" && (
 
 # TODO: Add option for Sublime Text 3
 ask_prompt "Install Sublime Text 2?" && (
-  output "Installing Sublime Text"
+  output "Installing Sublime Text 2"
   if [[ $OS == 'linux' ]]; then
     add_apt ppa:webupd8team/sublime-text-2
     apt_update
