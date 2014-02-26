@@ -18,27 +18,62 @@ Run the following command from the command line:
 
 ## What It Installs
 
-- (Linux) Multiarch (i386)
-- (Mac) Homebrew
-- (Mac) Homebrew Casks (Homebrew addon for GUI apps)
-- (Linux) Base development packages
-- zsh
-- Git, Subversion
-- tmux
-- vim (latest builds)
-- ctags
-- ack, ag
-- Desktop search tools (Synapse for Linux, Alfred 2 for Mac)
-- Chrome
+### Prerequisites
+- [OSX] Homebrew
+- [OSX] Homebrew Casks (Homebrew addon for GUI apps)
+- [OSX] Xcode + Command Line Tools
+- [Ubuntu] Multiarch (i386)
+- [Ubuntu] Universe/Multiverse repos
+- Development packages / library dependencies
+
+### Development Environment
 - rbenv (Ruby version management)
+    - Plugins: ruby-build, rbenv-ctags, rbenv-default-gems, rbenv-update
 - pyenv (Python version management)
+    - Plugins: pyenv-virtualenv
 - Virtualbox
 - Vagrant
-- (Linux) Fonts not included in base Ubuntu install
-- rcm (dotfiles management)
+    - Plugins: dotenv, vagrant-digitalocean, vagrant-vbguest, vagrant-snapshot
+- Microsoft's IE App Compatibility Virtual Machines ([ievms](https://github.com/xdissent/ievms))
+    - [iectrl](https://github.com/xdissent/iectrl) for rearming VMs
+- Version control clients (Git, Subversion)
+- Git GUI clients
+    - [OSX] GitX, SourceTree
+    - [Ubuntu] gitg
+- vim (latest builds)
+- Sublime Text 2
+
+### Browsers
+- Chrome
+- Chrome pre-release build for testing
+    - [OSX] Canary
+    - [Ubuntu] Chromium dev channel
+- Firefox
+- Firefox pre-release build for testing
+    - [OSX] Aurora
+    - [Ubuntu] Nightly build
+
+### Collaboration
 - HipChat
 - Dropbox
+- Skype
+- [OSX] Google Drive
 
-## It Installs More Than I Want!
+### Handy Tools
+- Desktop search tools
+    - [OSX] Alfred
+    - [Ubuntu] Synapse
+- [OSX] iTerm2
+- [OSX] Harvest
+- [Ubuntu] Fonts not included in base Ubuntu install
 
-It's a tiny bit of disk space. Stop whining.
+### Delicious UNIX
+- [OSX] Up-to-date bash
+- zsh
+- tmux
+- ctags
+- ag
+- htop
+
+## My machine is already up and running, I have some of this!
+At the start of the script, you'll have the opportunity to choose to either run the entire script, or to selectively install the pieces you need.

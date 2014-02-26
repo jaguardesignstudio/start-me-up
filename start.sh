@@ -269,6 +269,14 @@ ask_prompt "Install version control systems?" && (
   install git subversion
 )
 
+ask_prompt "Install version control GUI clients?" && (
+  if [[ $OS == 'linux' ]]; then
+    apt_install gitg
+  elif [[ $OS == 'mac' ]]; then
+    cask_install sourcetree gitx-rowanj
+  fi
+)
+
 ask_prompt "Install node.js? (Used for JSHint and IE VMs controller)" && (
   output "Installing node.js"
   if [[ $OS == 'linux' ]]; then
