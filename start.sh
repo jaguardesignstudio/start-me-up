@@ -431,6 +431,7 @@ ask_prompt "Install rbenv? (Ruby version manager)" && (
     echo 'gem-browse' >> ~/.rbenv/default-gems
     echo 'git-up' >> ~/.rbenv/default-gems
     echo 'foreman' >> ~/.rbenv/default-gems
+    echo 'listen' >> ~/.rbenv/default-gems
     echo 'html2haml' >> ~/.rbenv/default-gems
     echo 'middleman' >> ~/.rbenv/default-gems
     echo 'rubocop' >> ~/.rbenv/default-gems
