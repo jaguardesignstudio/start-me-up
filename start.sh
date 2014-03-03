@@ -277,6 +277,14 @@ ask_prompt "Install version control GUI clients?" && (
   fi
 )
 
+ask_prompt "Install Java?" && (
+  if [[ $OS == 'linux' ]]; then
+    apt_install openjdk-7-jdk openjdk-7-jre
+  elif [[ $OS == 'mac' ]]; then
+    cask_install java
+  fi
+)
+
 ask_prompt "Install node.js? (Used for JSHint and IE VMs controller)" && (
   output "Installing node.js"
   if [[ $OS == 'linux' ]]; then
