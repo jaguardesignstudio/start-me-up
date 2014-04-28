@@ -14,7 +14,7 @@ This script works with Mac OS X 10.9+ and Ubuntu 12.04+ x64
 
 Run the following command from the command line:
 
-    bash <(curl -s https://raw.github.com/jaguardesign/start-me-up/master/start.sh)
+    bash <(curl -s https://raw.githubusercontent.com/jaguardesign/start-me-up/master/start.sh)
 
 ## What It Installs
 

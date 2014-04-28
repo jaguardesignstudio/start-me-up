@@ -569,7 +569,7 @@ ask_prompt "Install Skype?" && (
 )
 
 if [[ $OS == 'mac' ]]; then
-  ask_prompt "Install Screenhero?" && (
+  ask_prompt "Install Screenhero? (Screen sharing for remote pairing)" && (
     output "Installing Screenhero"
     cask_install screenhero
   )
