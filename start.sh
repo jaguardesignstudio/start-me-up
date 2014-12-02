@@ -275,7 +275,7 @@ ask_prompt "Install version control GUI clients?" && (
   if [[ $OS == 'linux' ]]; then
     apt_install gitg
   elif [[ $OS == 'mac' ]]; then
-    cask_install sourcetree # gitx-rowanj
+    cask_install sourcetree #gitx-rowanj
   fi
 )
 
@@ -535,16 +535,16 @@ ask_prompt "Install HipChat?" && (
   fi
 )
 
-ask_prompt "Install Dropbox?" && (
-  output "Installing Dropbox"
-  if [[ $OS == 'linux' ]]; then
-    if ! command -v dropbox > /dev/null; then
-      deb_install https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_1.6.0_amd64.deb
-    fi
-  elif [[ $OS == 'mac' ]]; then
-    cask_install dropbox
-  fi
-)
+# ask_prompt "Install Dropbox?" && (
+  # output "Installing Dropbox"
+  # if [[ $OS == 'linux' ]]; then
+    # if ! command -v dropbox > /dev/null; then
+      # deb_install https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_1.6.0_amd64.deb
+    # fi
+  # elif [[ $OS == 'mac' ]]; then
+    # cask_install dropbox
+  # fi
+# )
 
 if [[ $OS == 'mac' ]]; then
   ask_prompt "Install Google Drive?" && (
