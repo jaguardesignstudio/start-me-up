@@ -275,7 +275,7 @@ ask_prompt "Install version control GUI clients?" && (
   if [[ $OS == 'linux' ]]; then
     apt_install gitg
   elif [[ $OS == 'mac' ]]; then
-    cask_install sourcetree gitx-rowanj
+    cask_install sourcetree # gitx-rowanj
   fi
 )
 
