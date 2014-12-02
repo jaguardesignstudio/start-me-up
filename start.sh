@@ -411,7 +411,7 @@ ask_prompt "Install pre-release Firefox for testing?" && (
     apt_install firefox-trunk
   elif [[ $OS == 'mac' ]]; then
     output "Install Firefox Aurora"
-    cask_install firefox-aurora
+    cask_install firefoxdeveloperedition
   fi
 )
 
