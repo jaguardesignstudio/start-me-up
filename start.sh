@@ -198,14 +198,14 @@ if [[ $OS == 'mac' ]]; then
   ask_prompt "Install Homebrew? (must install if not already installed)" && (
     output "Installing Homebrew"
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install curl-ca-bundle
-    append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
-    append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
+    # brew install curl-ca-bundle
+    # append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
+    # append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
     # move /usr/local/bin to the top of /etc/paths
-    echo "/usr/local/bin" | cat - /etc/paths | awk '!seen[$0]++' > /tmp/out && sudo mv /tmp/out /etc/paths
+    # echo "/usr/local/bin" | cat - /etc/paths | awk '!seen[$0]++' > /tmp/out && sudo mv /tmp/out /etc/paths
     # Set env vars for current shell
-    SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt
-    PATH="/usr/local/bin:$PATH"
+    # SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt
+    # PATH="/usr/local/bin:$PATH"
   )
 fi
 
