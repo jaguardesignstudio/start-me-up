@@ -493,7 +493,6 @@ ask_prompt "Install Virtualbox and Vagrant? (required for running dev environmen
   fi
   vagrant plugin install dotenv
   vagrant plugin install vagrant-digitalocean
-  vagrant plugin install vagrant-notify
   vagrant plugin install vagrant-vbguest
   vagrant plugin install vagrant-vbox-snapshot
 )
