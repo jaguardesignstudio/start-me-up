@@ -36,9 +36,9 @@ output "Note: You will be asked to enter your password and press Enter a few tim
 output ""
 
 if [[ $OS == 'linux' ]]; then
-  bash ./install-linux.sh
+  bash <(curl -s https://raw.githubusercontent.com/jaguardesign/start-me-up/master/install-linux.sh)
 elif [[ $OS == 'mac' ]]; then
-  bash ./install-osx.sh
+  bash <(curl -s https://raw.githubusercontent.com/jaguardesign/start-me-up/master/install-osx.sh)
 else
   output "OS not recognized. Please run on a Mac or a Ubuntu Linux system."
 fi
