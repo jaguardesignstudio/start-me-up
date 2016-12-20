@@ -60,22 +60,15 @@ if [[ -x $(which brew) ]]; then
 else
   output "Installing Homebrew"
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-  brew install curl-ca-bundle
-  append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.bashrc
-  append_if_missing 'SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt' ~/.zshrc
   # move /usr/local/bin to the top of /etc/paths
   echo "/usr/local/bin" | cat - /etc/paths | awk '!seen[$0]++' > /tmp/out && sudo mv /tmp/out /etc/paths
   # Set env vars for current shell
-  SSL_CERT_FILE=/usr/local/opt/curl-ca-bundle/share/ca-bundle.crt
   PATH="/usr/local/bin:$PATH"
 fi
 
 # install Homebrew bundle and install contents of Brewfile
 brew tap Homebrew/bundle
-brew bundle
-
-# install Homebrew bundle and install contents of Brewfile
-brew tap Homebrew/bundle
+curl -OL https://raw.githubusercontent.com/jaguardesignstudio/start-me-up/master/Brewfile
 brew bundle
 
 # Add Yarn global bin path to PATH
