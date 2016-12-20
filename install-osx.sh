@@ -74,6 +74,18 @@ fi
 brew tap Homebrew/bundle
 brew bundle
 
+# install Homebrew bundle and install contents of Brewfile
+brew tap Homebrew/bundle
+brew bundle
+
+# Add Yarn global bin path to PATH
+append_if_missing 'PATH="$PATH:$(yarn global bin)"' ~/.bashrc
+append_if_missing 'PATH="$PATH:$(yarn global bin)"' ~/.zshrc
+PATH="$PATH:$(yarn global bin)"
+
+# install eslint
+yarn global add eslint
+
 # install Vagrant plugins
 vagrant plugin install dotenv
 vagrant plugin install vagrant-cachier

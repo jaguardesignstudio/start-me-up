@@ -29,12 +29,15 @@ output ""
 output "START ME UP"
 output ""
 output "Jaguar's system provisioning script"
+output ""
+output "OS detected: ${OS}"
+output ""
 output "Note: You will be asked to enter your password and press Enter a few times, so don't run off!"
 output ""
 
 if [[ $OS == 'linux' ]]; then
   bash ./install-linux.sh
-else if [[ $OS == 'mac' ]]; then
+elif [[ $OS == 'mac' ]]; then
   bash ./install-osx.sh
 else
   output "OS not recognized. Please run on a Mac or a Ubuntu Linux system."

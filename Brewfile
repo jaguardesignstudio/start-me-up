@@ -10,9 +10,6 @@ brew 'qt'
 brew 'git'
 brew 'subversion'
 
-# nodejs
-brew 'node'
-
 # unix
 brew "bash"
 brew "zsh"
@@ -29,7 +26,9 @@ brew 'rbenv'
 brew 'ruby-build'
 
 # JS/node
+brew 'node'
 brew 'yarn'
+brew 'jsonlint'
 
 # slack
 cask 'slack'
