@@ -1,4 +1,4 @@
-#!/bin/basn
+#!/bin/bash
 
 # Colors
 CLEAR="\033[0m"
@@ -68,8 +68,10 @@ fi
 
 # install Homebrew bundle and install contents of Brewfile
 brew tap Homebrew/bundle
+brew tap caskroom/versions
 curl -OL https://raw.githubusercontent.com/jaguardesignstudio/start-me-up/master/Brewfile
 brew bundle
+rm Brewfile
 
 # Add Yarn global bin path to PATH
 append_if_missing 'PATH="$PATH:$(yarn global bin)"' ~/.bashrc
@@ -89,7 +91,7 @@ git_install git://github.com/tpope/rbenv-ctags.git ~/.rbenv/plugins/rbenv-ctags
 git_install https://github.com/sstephenson/rbenv-default-gems.git ~/.rbenv/plugins/rbenv-default-gems
 git_install https://github.com/rkh/rbenv-update.git ~/.rbenv/plugins/rbenv-update
 git_install git://github.com/tpope/rbenv-readline.git ~/.rbenv/plugins/rbenv-readline
-if [[ -z ~/.rbenv/default-gems ]]; then
+if [[ -e ~/.rbenv/default-gems ]]; then
   echo 'awesome_print' > ~/.rbenv/default-gems
   echo 'gem-browse' >> ~/.rbenv/default-gems
   echo 'gem-ctags' >> ~/.rbenv/default-gems
@@ -102,7 +104,11 @@ if [[ -z ~/.rbenv/default-gems ]]; then
   echo 'cocoapods' >> ~/.rbenv/default-gems
   echo 'terminal-notifier' >> ~/.rbenv/default-gems
 fi
+
 # TODO: install Jaguar Gemfury source and Jag gems automatically,
 # but we can't do this with a publicly viewable repo.
 # Implement this when moving to Ansible and use ansible-vault for
 # protecting the repo's credentials
+
+output ""
+output "Build complete! Thank you for using START ME UP"

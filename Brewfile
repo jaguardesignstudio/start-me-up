@@ -4,7 +4,7 @@ brew 'libffi'
 brew 'libksba'
 brew 'libyaml'
 brew 'phantomjs'
-brew 'qt'
+brew 'qt5'
 
 # version control
 brew 'git'
@@ -50,7 +50,7 @@ cask 'pgadmin3'
 cask 'alfred'
 
 # browsers
-cask 'coogle-chrome'
+cask 'google-chrome'
 cask 'google-chrome-canary'
 cask 'firefox'
 cask 'firefoxdeveloperedition'
