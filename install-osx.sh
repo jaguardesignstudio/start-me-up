@@ -86,6 +86,12 @@ vagrant plugin install dotenv
 vagrant plugin install vagrant-cachier
 vagrant plugin install vagrant-vbguest
 
+# Add entries to /etc/sudoers to allow Vagrant NFS usage without password
+append_if_missing "Cmnd_Alias VAGRANT_EXPORTS_ADD = /usr/bin/tee -a /etc/exports" /etc/sudoers
+append_if_missing "Cmnd_Alias VAGRANT_NFSD = /sbin/nfsd restart" /etc/sudoers
+append_if_missing "Cmnd_Alias VAGRANT_EXPORTS_REMOVE = /usr/bin/sed -E -e /*/ d -ibak /etc/exports" /etc/sudoers
+append_if_missing "%admin ALL=(root) NOPASSWD: VAGRANT_EXPORTS_ADD, VAGRANT_NFSD, VAGRANT_EXPORTS_REMOVE" /etc/sudoers
+
 # install rbenv plugins
 git_install git://github.com/tpope/rbenv-ctags.git ~/.rbenv/plugins/rbenv-ctags
 git_install https://github.com/sstephenson/rbenv-default-gems.git ~/.rbenv/plugins/rbenv-default-gems
