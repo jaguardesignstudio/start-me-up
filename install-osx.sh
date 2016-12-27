@@ -10,7 +10,7 @@ output() {
 
 append_if_missing() {
   if ! grep -Fxq "$1" "$2"; then
-    echo "$1" >> "$2"
+    sudo echo "$1" >> "$2"
   fi
 }
 
@@ -68,7 +68,6 @@ fi
 
 # install Homebrew bundle and install contents of Brewfile
 brew tap Homebrew/bundle
-brew tap caskroom/versions
 curl -OL https://raw.githubusercontent.com/jaguardesignstudio/start-me-up/master/Brewfile
 brew bundle
 rm Brewfile
