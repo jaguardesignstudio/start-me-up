@@ -38,14 +38,15 @@ brew 'rbenv'
 brew 'ruby-build'
 
 # unix
-brew "bash"
+brew 'bash'
+brew 'dnsmasq'
 brew 'ctags'
 brew 'htop-osx'
 brew 'rcm'
 brew 'the_silver_searcher'
 brew 'tmux'
 brew 'wget'
-brew "zsh"
+brew 'zsh'
 
 #############
 ## GUI apps #

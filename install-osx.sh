@@ -115,5 +115,13 @@ fi
 # Implement this when moving to Ansible and use ansible-vault for
 # protecting the repo's credentials
 
+# Configure DNSMasq for *.dev TLD
+sudo mkdir -p /usr/local/etc
+echo "address=/.dev/127.0.0.1" > /usr/local/etc/dnsmasq.conf
+sudo cp -fv /usr/local/opt/dnsmasq/*.plist /Library/LaunchDaemons
+sudo launchctl load /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
+sudo mkdir -p /etc/resolver
+sudo sh -c 'echo "nameserver 127.0.0.1" > /etc/resolver/dev'
+
 output ""
 output "Build complete! Thank you for using START ME UP"
