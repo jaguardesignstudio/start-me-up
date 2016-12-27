@@ -41,7 +41,6 @@ brew 'ruby-build'
 brew "bash"
 brew 'ctags'
 brew 'htop-osx'
-brew 'iotop'
 brew 'rcm'
 brew 'the_silver_searcher'
 brew 'tmux'
