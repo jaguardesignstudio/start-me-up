@@ -72,6 +72,10 @@ curl -OL https://raw.githubusercontent.com/jaguardesignstudio/start-me-up/master
 brew bundle
 rm Brewfile
 
+# Add rbenv init
+echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile
+echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.zprofile
+
 # Add Yarn global bin path to PATH
 append_if_missing 'PATH="$PATH:$(yarn global bin)"' ~/.bashrc
 append_if_missing 'PATH="$PATH:$(yarn global bin)"' ~/.zshrc

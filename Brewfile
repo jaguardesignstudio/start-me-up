@@ -11,6 +11,7 @@ cask_args appdir: '/Applications'
 #####################
 
 # development packages
+brew 'coreutils'
 brew 'gdbm'
 brew 'git'
 brew 'libffi'
