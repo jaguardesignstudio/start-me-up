@@ -105,7 +105,6 @@ cask 'skype'
 
 # slack
 mas 'Slack', id: 803453959
-cask 'screenhero'
 
 # terminal
 cask 'iterm2'
