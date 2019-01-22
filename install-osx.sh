@@ -94,6 +94,7 @@ yarn global add eslint
 vagrant plugin install dotenv
 vagrant plugin install vagrant-cachier
 vagrant plugin install vagrant-vbguest
+vagrant plugin install vagrant-bindfs
 
 # Add entries to /etc/sudoers to allow Vagrant NFS usage without password
 append_if_missing "Cmnd_Alias VAGRANT_EXPORTS_ADD = /usr/bin/tee -a /etc/exports" /etc/sudoers
