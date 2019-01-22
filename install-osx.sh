@@ -49,10 +49,16 @@ else
   read -p "Press Enter once Xcode is fully downloaded and installed..."
   output "Running xcodebuild to accept Xcode license..."
   sudo xcodebuild -license
-  output "Installing Xcode Command Line Tools"
-  bash <(curl -s https://raw.github.com/timsutton/osx-vm-templates/master/scripts/xcode-cli-tools.sh)
-  output ""
 fi
+
+# Install Xcode Command Line Tools
+output "Installing Xcode Command Line Tools"
+output ""
+if defaults read loginwindow SystemVersionStampAsString | grep -qE "10.14"; then
+  sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+else
+  bash <(curl -s https://raw.github.com/timsutton/osx-vm-templates/master/scripts/xcode-cli-tools.sh)
+end
 
 # install Homebrew
 if [[ -x $(which brew) ]]; then
