@@ -1,5 +1,4 @@
-tap 'caskroom/cask'
-tap 'caskroom/versions'
+tap 'homebrew/cask'
 tap 'homebrew/services'
 tap 'neovim/neovim'
 tap 'thoughtbot/formulae'
@@ -18,7 +17,6 @@ brew 'libffi'
 brew 'libksba'
 brew 'libyaml'
 brew 'openssl'
-brew 'phantomjs'
 brew 'readline'
 brew 'qt5'
 brew 'subversion'
@@ -61,9 +59,8 @@ cask 'postman'
 
 # browsers
 cask 'google-chrome'
-cask 'google-chrome-canary'
 cask 'firefox'
-cask 'firefoxdeveloperedition'
+# cask 'firefoxdeveloperedition'
 
 # cloud
 cask 'cyberduck'
@@ -72,8 +69,7 @@ cask 'dropbox'
 # development
 cask 'browserstacklocal'
 cask 'dash'
-cask 'github-desktop'
-mas 'Xcode', id: 497799835
+# mas 'Xcode', id: 497799835
 
 # editors
 cask 'atom'
@@ -93,9 +89,9 @@ mas 'ResolutionTab', id: 540141595
 cask 'vlc'
 
 # networking
-mas 'IP Scanner', id: 404167149
-mas 'WiFi Explorer', id: 494803304
-mas 'WiFi Signal', id: 525912054
+# mas 'IP Scanner', id: 404167149
+# mas 'WiFi Explorer', id: 494803304
+# mas 'WiFi Signal', id: 525912054
 
 # postgres
 cask 'pgadmin3'
