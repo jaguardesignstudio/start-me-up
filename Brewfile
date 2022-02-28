@@ -105,7 +105,5 @@ mas 'Slack', id: 803453959
 # terminal
 cask 'iterm2'
 
-# virtualbox
-cask 'virtualbox'
-cask 'vagrant'
-cask 'vagrant-manager'
+# docker
+cask 'docker'
