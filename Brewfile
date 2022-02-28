@@ -59,8 +59,9 @@ cask 'postman'
 
 # browsers
 cask 'google-chrome'
+cask 'homebrew/cask-versions/google-chrome-canary'
 cask 'firefox'
-# cask 'firefoxdeveloperedition'
+cask 'homebrew/cask-versions/firefox-developer-edition'
 
 # cloud
 cask 'cyberduck'
@@ -94,7 +95,8 @@ cask 'vlc'
 # mas 'WiFi Signal', id: 525912054
 
 # postgres
-cask 'pgadmin3'
+cask 'pgadmin4'
+cask 'dbeaver-community'
 
 # skype
 cask 'skype'
