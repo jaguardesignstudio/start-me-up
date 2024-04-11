@@ -38,7 +38,7 @@ output ""
 if [[ $OS == 'linux' ]]; then
   bash <(curl -s https://raw.githubusercontent.com/jaguardesign/start-me-up/master/install-linux.sh)
 elif [[ $OS == 'mac' ]]; then
-  bash <(curl -s https://raw.githubusercontent.com/jaguardesign/start-me-up/master/install-osx.sh)
+  bash <(curl -s https://raw.githubusercontent.com/jaguardesign/start-me-up/master/install-macos-arm.sh)
 else
   output "OS not recognized. Please run on a Mac or a Ubuntu Linux system."
 fi
