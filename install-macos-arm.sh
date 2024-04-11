@@ -26,15 +26,6 @@ touch ~/.bash_profile
 touch ~/.bashrc
 touch ~/.zshrc
 
-# install Ansible
-# TODO: move this configuration to Ansible
-# if [[ -x $(which ansible) ]]; then
-#   output "Ansible already installed, skipping..."
-# else
-#   output "Installing Ansible"
-#   sudo pip install ansible
-# fi
-
 # install Xcode
 if [[ -x /Applications/Xcode.app ]]; then
   output "Xcode already installed, skipping..."
@@ -76,9 +67,9 @@ curl -OL https://raw.githubusercontent.com/jaguardesignstudio/start-me-up/master
 brew bundle
 rm Brewfile
 
-# Add rbenv init
-echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile
-echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.zprofile
+# Add asdf to shell config
+echo -e "\nexport ASDF_DIR=\"$(brew --prefix asdf)/libexec/asdf.sh\"" >> ~/.profile
+echo -e "\n. \"$(brew --prefix asdf)/libexec/asdf.sh\"" >> ~/.profile
 
 # Add Yarn global bin path to PATH
 append_if_missing 'PATH="$PATH:$(yarn global bin)"' ~/.bashrc
@@ -88,24 +79,9 @@ PATH="$PATH:$(yarn global bin)"
 # install eslint
 yarn global add eslint
 
-# install rbenv plugins
-git_install git://github.com/tpope/rbenv-ctags.git ~/.rbenv/plugins/rbenv-ctags
-git_install https://github.com/sstephenson/rbenv-default-gems.git ~/.rbenv/plugins/rbenv-default-gems
-git_install https://github.com/rkh/rbenv-update.git ~/.rbenv/plugins/rbenv-update
-git_install git://github.com/tpope/rbenv-readline.git ~/.rbenv/plugins/rbenv-readline
-if [[ -e ~/.rbenv/default-gems ]]; then
-  echo 'awesome_print' > ~/.rbenv/default-gems
-  echo 'gem-browse' >> ~/.rbenv/default-gems
-  echo 'gem-ctags' >> ~/.rbenv/default-gems
-  echo 'git-up' >> ~/.rbenv/default-gems
-  echo 'foreman' >> ~/.rbenv/default-gems
-  echo 'html2haml' >> ~/.rbenv/default-gems
-  echo 'middleman' >> ~/.rbenv/default-gems
-  echo 'pry' >> ~/.rbenv/default-gems
-  echo 'rubocop' >> ~/.rbenv/default-gems
-  echo 'cocoapods' >> ~/.rbenv/default-gems
-  echo 'terminal-notifier' >> ~/.rbenv/default-gems
-fi
+# install asdf plugins
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
 
 # TODO: install Jaguar Gemfury source and Jag gems automatically,
 # but we can't do this with a publicly viewable repo.
